@@ -1,5 +1,6 @@
 # Metadata Before Rich Editor
 #learning
+
 ## Insight
 For writing products, lightweight metadata editing is a useful proving ground before integrating the rich-text editor.
 

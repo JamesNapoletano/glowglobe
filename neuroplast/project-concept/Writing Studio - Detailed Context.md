@@ -1,5 +1,6 @@
 # Writing Studio - Detailed Context
 #project-concept
+
 ## Linked Orientation
 [[Writing Studio - Orientation]]
 

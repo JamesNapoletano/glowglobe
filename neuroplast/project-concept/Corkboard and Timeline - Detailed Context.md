@@ -1,5 +1,6 @@
 # Corkboard and Timeline - Detailed Context
 #project-concept
+
 ## Linked Orientation
 [[Corkboard and Timeline - Orientation]]
 

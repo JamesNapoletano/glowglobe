@@ -1,5 +1,6 @@
 # Plot and Structure - Orientation
 #project-concept
+
 ## Purpose
 Capture the higher-level narrative shape of a project, including acts, beats, arcs, subplots, and POV distribution.
 

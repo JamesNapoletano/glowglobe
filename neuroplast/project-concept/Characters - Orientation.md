@@ -1,5 +1,6 @@
 # Characters - Orientation
 #project-concept
+
 ## Purpose
 Store structured information about people and entities in the story so the author can maintain personality, history, goals, and continuity.
 

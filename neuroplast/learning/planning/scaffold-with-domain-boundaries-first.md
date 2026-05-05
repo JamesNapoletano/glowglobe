@@ -1,5 +1,6 @@
 # Scaffold With Domain Boundaries First
 #learning
+
 ## Insight
 For domain-heavy products, the first scaffold should establish domain types and repository interfaces at the same time as the UI shell instead of treating them as later cleanup work.
 

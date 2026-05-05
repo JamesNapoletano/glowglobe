@@ -1,5 +1,6 @@
 # Lore and Glossary - Orientation
 #project-concept
+
 ## Purpose
 Store canon terms, history, factions, language notes, and recurring concepts in a form that improves consistency and retrieval.
 

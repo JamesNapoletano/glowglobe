@@ -1,5 +1,6 @@
 # Rich Editor After Metadata
 #learning
+
 ## Insight
 Integrating a rich-text editor is smoother after metadata editing and selection flows are already stable.
 

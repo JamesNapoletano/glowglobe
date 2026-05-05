@@ -1,5 +1,6 @@
 # Lore and Glossary - Detailed Context
 #project-concept
+
 ## Linked Orientation
 [[Lore and Glossary - Orientation]]
 

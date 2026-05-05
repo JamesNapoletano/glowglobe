@@ -1,5 +1,6 @@
 # Environment and Planet - Detailed Context
 #project-concept
+
 ## Linked Orientation
 [[Environment and Planet - Orientation]]
 

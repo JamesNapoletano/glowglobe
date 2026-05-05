@@ -1,5 +1,6 @@
 # Local Persistence Plan
 #plan
+
 ## Objective
 Implement IndexedDB-backed local project persistence and wire the project creation form into a real persisted workspace flow.
 

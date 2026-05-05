@@ -1,5 +1,6 @@
 # Plot and Structure - Detailed Context
 #project-concept
+
 ## Linked Orientation
 [[Plot and Structure - Orientation]]
 

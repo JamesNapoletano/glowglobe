@@ -1,5 +1,6 @@
 # Manuscript-First Foundation Plan
 #plan
+
 ## Objective
 Establish the durable Neuroplast project mind and canonical architecture for GlowGlobe as a manuscript-first, local-first, sync-ready, single-author writing platform.
 

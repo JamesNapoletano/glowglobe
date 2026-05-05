@@ -1,5 +1,6 @@
 # V1 Implementation Plan
 #plan
+
 ## Objective
 Define the execution-ready implementation plan for GlowGlobe’s first buildable version, covering stack selection, domain schema, app shell, editor approach, and local persistence strategy.
 

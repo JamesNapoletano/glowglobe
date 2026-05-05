@@ -1,5 +1,6 @@
 # IndexedDB-First Project Aggregate
 #learning
+
 ## Insight
 For a local-first writing app, persisting the full project aggregate first is a practical bridge between mock data and finer-grained repositories.
 

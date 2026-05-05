@@ -1,5 +1,6 @@
 # Scene Metadata Editing Plan
 #plan
+
 ## Objective
 Implement persisted scene metadata editing for the active scene, covering title and summary updates through the current project aggregate flow.
 

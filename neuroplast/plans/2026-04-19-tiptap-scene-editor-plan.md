@@ -1,5 +1,6 @@
 # Tiptap Scene Editor Plan
 #plan
+
 ## Objective
 Integrate a persisted Tiptap-based scene body editor for the active scene using the existing project aggregate persistence flow.
 

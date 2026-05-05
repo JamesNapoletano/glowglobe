@@ -1,5 +1,6 @@
 # Characters - Detailed Context
 #project-concept
+
 ## Linked Orientation
 [[Characters - Orientation]]
 

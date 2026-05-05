@@ -1,5 +1,6 @@
 # Project Aggregate Manuscript CRUD
 #learning
+
 ## Insight
 When local-first persistence is still centered on a broad project aggregate, chapter and scene CRUD can ship quickly if selection state and mutation helpers stay explicit.
 

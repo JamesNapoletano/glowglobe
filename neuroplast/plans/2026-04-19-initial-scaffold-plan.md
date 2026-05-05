@@ -1,5 +1,6 @@
 # Initial Scaffold Plan
 #plan
+
 ## Objective
 Scaffold the initial GlowGlobe application using Next.js, React, TypeScript, Material UI, and react-hook-form, while codifying the app shell, core domain types, and repository interfaces.
 

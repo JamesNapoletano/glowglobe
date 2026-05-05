@@ -1,5 +1,6 @@
 # Projects Workspace - Orientation
 #project-concept
+
 ## Purpose
 Provide the top-level shell for creating, organizing, opening, archiving, and switching between multiple books and writing projects.
 

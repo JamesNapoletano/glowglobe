@@ -1,5 +1,6 @@
 # Implementation Strategy - Orientation
 #project-concept
+
 ## Purpose
 Define the first implementation direction for the application stack, app shell, editor foundation, and persistence model.
 

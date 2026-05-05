@@ -1,5 +1,6 @@
 # Local-First Sync-Ready Writing Products
 #learning
+
 ## Insight
 When planning a writing application that is expected to become an online service later, choose the long-term data boundaries early even if the first release is entirely local.
 

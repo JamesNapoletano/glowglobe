@@ -1,5 +1,6 @@
 # Manuscript CRUD Plan
 #plan
+
 ## Objective
 Implement persisted chapter and scene creation and selection on top of the existing local project repository.
 

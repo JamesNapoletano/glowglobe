@@ -1,5 +1,6 @@
 # Writing Studio - Orientation
 #project-concept
+
 ## Purpose
 Provide the primary manuscript-first workspace for drafting, revising, and organizing rich long-form writing.
 

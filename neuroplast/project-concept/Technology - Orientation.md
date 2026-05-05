@@ -1,5 +1,6 @@
 # Technology - Orientation
 #project-concept
+
 ## Purpose
 Capture the tools, systems, inventions, and rule-based mechanisms that shape the story world.
 

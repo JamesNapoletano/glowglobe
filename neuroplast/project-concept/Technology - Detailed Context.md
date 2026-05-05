@@ -1,5 +1,6 @@
 # Technology - Detailed Context
 #project-concept
+
 ## Linked Orientation
 [[Technology - Orientation]]
 

@@ -1,5 +1,6 @@
 # Manuscript Editor Architecture Notes
 #learning
+
 ## Insight
 For writing products, the editor should be treated as one subsystem inside a larger domain model rather than as the product’s only source of truth.
 

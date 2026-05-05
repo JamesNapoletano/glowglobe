@@ -1,5 +1,6 @@
 # Implementation Strategy - Detailed Context
 #project-concept
+
 ## Linked Orientation
 [[Implementation Strategy - Orientation]]
 
