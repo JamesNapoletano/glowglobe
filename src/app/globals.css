@@ -1,0 +1,57 @@
+:root {
+  --font-editor: Georgia, "Times New Roman", serif;
+  --editor-surface: rgba(255, 252, 246, 0.98);
+  --editor-border: rgba(104, 112, 128, 0.16);
+  --surface-alt: rgba(243, 247, 251, 0.88);
+  --foreground: #162033;
+}
+
+.ProseMirror p {
+  margin: 0 0 1rem;
+}
+
+.editor-prose {
+  font-family: var(--font-editor);
+}
+
+.tiptap-editor-surface {
+  min-height: 460px;
+  border-radius: 18px;
+  border: 1px solid var(--editor-border);
+  background: var(--editor-surface);
+  padding: 1.55rem 1.7rem;
+  font-size: 18px;
+  line-height: 1.9;
+  color: var(--foreground);
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 10px 28px rgba(27, 40, 61, 0.04);
+}
+
+.tiptap-editor-shell {
+  border-radius: 18px;
+  border: 1px solid var(--editor-border);
+  background: var(--editor-surface);
+  padding: 1.55rem 1.7rem;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+.ProseMirror:focus {
+  border-color: #355d96;
+  box-shadow: 0 0 0 1px rgba(53, 93, 150, 0.18);
+}
+
+@media (max-width: 899px) {
+  .tiptap-editor-surface,
+  .tiptap-editor-shell {
+    padding: 1.2rem 1.1rem;
+  }
+
+  .tiptap-editor-surface {
+    min-height: 380px;
+    font-size: 17px;
+    line-height: 1.8;
+  }
+}

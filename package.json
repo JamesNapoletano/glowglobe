@@ -1,0 +1,51 @@
+{
+  "name": "glowglobe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A manuscript-first writing workspace for novels and long-form documents.",
+  "keywords": [
+    "writing",
+    "editor",
+    "novel",
+    "worldbuilding",
+    "story-bible",
+    "react",
+    "nextjs"
+  ],
+  "license": "ISC",
+  "author": "James Napoletano",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^9.0.0",
+    "@mui/material": "^9.0.0",
+    "@mui/material-nextjs": "^9.0.0",
+    "@tiptap/extension-document": "2.14.0",
+    "@tiptap/extension-paragraph": "2.14.0",
+    "@tiptap/extension-placeholder": "2.14.0",
+    "@tiptap/extension-text": "2.14.0",
+    "@tiptap/react": "2.14.0",
+    "@tiptap/starter-kit": "2.14.0",
+    "next": "16.2.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "7.56.4"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "3.3.1",
+    "@types/node": "22.15.21",
+    "@types/react": "19.1.5",
+    "@types/react-dom": "19.1.5",
+    "eslint": "9.26.0",
+    "eslint-config-next": "16.2.4",
+    "postcss": "8.5.3",
+    "typescript": "5.8.3"
+  }
+}
