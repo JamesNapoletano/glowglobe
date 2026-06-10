@@ -33,9 +33,13 @@ The author opens a manuscript, navigates to a chapter or scene, writes and revis
 - Focus-mode writing remains fast and readable.
 - The constrained writing rail keeps chapter and scene navigation readable even while the inspector remains visible.
 - Scene metadata and link updates should not cause unnecessary editor document resets or make the draft canvas feel blocked by local persistence work.
+- Route-driven scene creation should land on the newly created scene without canonical redirects bouncing back to stale selections, including route-remount windows before debounced persistence completes.
+- Scene deletion should only be exposed when another scene in the same chapter can take over, chapter deletion should only be exposed when another chapter remains, and both destructive actions should require confirmation before they can reroute the author to a valid surviving structure.
+- Dense inspector content should scroll inside the right column without forcing the entire writing workspace taller than the viewport.
+- The center writing column should scroll independently enough to keep draft-adjacent support cards reachable without turning the whole shell into a long page.
 
 ## Relationship to Other Areas
-`Writing Studio` consumes and produces context for `Characters`, `Technology`, `Environment and Planet`, `Lore and Glossary`, and planning surfaces such as `Corkboard and Timeline` and `Plot and Structure`.
+`Writing Studio` consumes and produces context for `Characters`, `Sociums`, `Technology`, `Environment and Planet`, `Lore and Glossary`, and planning surfaces such as `Corkboard and Timeline` and `Plot and Structure`. Scene-level linking now includes Sociums directly in the inspector.
 
 ## Open Questions
 - Whether comments, annotations, or footnotes are in v1 scope

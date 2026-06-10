@@ -10,14 +10,19 @@ import HubRounded from "@mui/icons-material/HubRounded";
 import LibraryBooksRounded from "@mui/icons-material/LibraryBooksRounded";
 import MapRounded from "@mui/icons-material/MapRounded";
 import MoreHorizRounded from "@mui/icons-material/MoreHorizRounded";
+import SwapHorizRounded from "@mui/icons-material/SwapHorizRounded";
 import SchemaRounded from "@mui/icons-material/SchemaRounded";
 import ScienceRounded from "@mui/icons-material/ScienceRounded";
 import TimelineRounded from "@mui/icons-material/TimelineRounded";
 import {
+  Alert,
   Box,
   Button,
+  Divider,
+  FormControlLabel,
   Card,
   CardContent,
+  Switch,
   IconButton,
   List,
   ListItemButton,
@@ -25,34 +30,44 @@ import {
   Menu,
   MenuItem,
   Stack,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { type MouseEvent, useState } from "react";
 import {
   contrastGuardClassNames,
   getSoftSelectedListItemSx,
   getStrongSelectedListItemSx,
 } from "@/components/selected-state-guardrails";
+import { GlowGlobeLogo } from "@/components/glowglobe-logo";
 import { getWorkspaceSurfaceLabel, type WorkspaceSurface } from "@/components/workspace-surfaces";
 import type { Project } from "@/lib/domain/types";
+import { brandTokens } from "@/theme/brand-tokens";
 
 type WorkspaceSidebarProps = {
-  project: Project;
   projects: Project[];
   activeProjectId: string;
   activeSurface: WorkspaceSurface;
+  activeProjectTitle?: string | null;
+  variant?: "default" | "writing";
   canCollapse: boolean;
   isCollapsed: boolean;
   onSelectProject: (projectId: string) => void;
   onSelectSurface: (surface: WorkspaceSurface) => void;
   onOpenCreateProject: () => void;
+  onArchiveProject: (projectId: string) => Promise<void>;
+  onMoveProjectToTrash: (projectId: string) => Promise<void>;
+  onRestoreProject: (projectId: string) => Promise<void>;
+  onPermanentlyDeleteTrashedProjects: (projectIds: string[]) => Promise<void>;
   onToggleCollapsed: () => void;
 };
 
 const surfaceIcons: Record<WorkspaceSurface, React.ReactNode> = {
   writing: <AutoStoriesRounded fontSize="small" />,
   characters: <GroupsRounded fontSize="small" />,
+  sociums: <HubRounded fontSize="small" />,
   world: <MapRounded fontSize="small" />,
   technology: <ScienceRounded fontSize="small" />,
   timeline: <TimelineRounded fontSize="small" />,
@@ -64,6 +79,7 @@ const surfaceIcons: Record<WorkspaceSurface, React.ReactNode> = {
 const surfaceDescriptions: Record<WorkspaceSurface, string> = {
   writing: "Focused manuscript drafting and scene work.",
   characters: "Profiles, arcs, and relationship context.",
+  sociums: "Factions, guilds, religions, kingdoms, and rival groups.",
   world: "Locations, regions, planets, and settings.",
   technology: "Rules, inventions, and system logic.",
   timeline: "Chronology and sequence management.",
@@ -73,19 +89,36 @@ const surfaceDescriptions: Record<WorkspaceSurface, string> = {
 };
 
 export function WorkspaceSidebar({
-  project,
   projects,
   activeProjectId,
   activeSurface,
+  activeProjectTitle,
+  variant = "default",
   canCollapse,
   isCollapsed,
   onSelectProject,
   onSelectSurface,
   onOpenCreateProject,
+  onArchiveProject,
+  onMoveProjectToTrash,
+  onRestoreProject,
+  onPermanentlyDeleteTrashedProjects,
   onToggleCollapsed,
 }: WorkspaceSidebarProps) {
   const [projectMenuAnchor, setProjectMenuAnchor] = useState<null | HTMLElement>(null);
-  const activeProject = projects.find((entry) => entry.id === activeProjectId) ?? project;
+  const [showArchived, setShowArchived] = useState(false);
+  const [showTrashed, setShowTrashed] = useState(false);
+  const [trashConfirmationText, setTrashConfirmationText] = useState("");
+  const activeProject = projects.find((entry) => entry.id === activeProjectId) ?? null;
+  const isWritingVariant = variant === "writing";
+  const activeProjects = projects.filter((entry) => entry.lifecycleState === "active");
+  const archivedProjects = projects.filter((entry) => entry.lifecycleState === "archived");
+  const trashedProjects = projects.filter((entry) => entry.lifecycleState === "trashed");
+  const visibleProjects = [
+    ...activeProjects,
+    ...(showArchived ? archivedProjects : []),
+    ...(showTrashed ? trashedProjects : []),
+  ];
 
   const openProjectMenu = (event: MouseEvent<HTMLElement>) => {
     setProjectMenuAnchor(event.currentTarget);
@@ -97,35 +130,43 @@ export function WorkspaceSidebar({
 
   const collapsedRailButtonSx = {
     minWidth: 0,
-    width: 44,
+    width: 64,
     height: 44,
     px: 0,
     py: 0,
-    borderRadius: 1.25,
+    borderRadius: 999,
     border: "1px solid",
-    borderColor: "rgba(79, 98, 126, 0.18)",
-    bgcolor: "rgba(250,252,255,0.92)",
+    borderColor: "divider",
+    bgcolor: "background.paper",
     color: "text.primary",
     justifyContent: "center",
     boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
     "&:hover": {
-      bgcolor: "rgba(49,90,146,0.08)",
-      borderColor: "rgba(49,90,146,0.28)",
+      bgcolor: alpha(brandTokens.palette.primary.main, 0.08),
+      borderColor: alpha(brandTokens.palette.primary.main, 0.28),
     },
+  } as const;
+
+  const projectActionButtonSx = {
+    width: "100%",
+    minWidth: 0,
+    flex: "1 1 0",
+    justifyContent: "center",
+    px: 1.35,
+    py: 0.7,
+  } as const;
+
+  const dangerActionButtonSx = {
+    ...projectActionButtonSx,
   } as const;
 
   return (
     <>
-      <Stack sx={{ height: "100%" }} spacing={isCollapsed ? 0.9 : 1.45}>
+      <Stack sx={{ height: "100%", minHeight: 0 }} spacing={isCollapsed ? 0.9 : isWritingVariant ? 1.15 : 1.45}>
         <Box sx={{ display: "flex", alignItems: isCollapsed ? "center" : "flex-start", justifyContent: isCollapsed ? "center" : "space-between", gap: 1, minWidth: 0 }}>
-          {isCollapsed ? null : (
+          {isCollapsed ? <GlowGlobeLogo compact showWordmark={false} /> : (
             <Box sx={{ minWidth: 0 }}>
-              <Typography variant="overline" color="text.secondary">
-                Navigation
-              </Typography>
-              <Typography sx={{ mt: 0.5, fontSize: 13, color: "text.secondary", overflowWrap: "anywhere" }}>
-                Project and surface controls
-              </Typography>
+              <GlowGlobeLogo subtitle={isWritingVariant ? "Writing workspace" : "Project and surface controls"} />
             </Box>
           )}
 
@@ -135,10 +176,10 @@ export function WorkspaceSidebar({
                 aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                 onClick={onToggleCollapsed}
                 sx={{
-                  borderRadius: 1.25,
+                  borderRadius: 999,
                   border: "1px solid",
-                  borderColor: "rgba(79, 98, 126, 0.18)",
-                  bgcolor: "rgba(250,252,255,0.9)",
+                  borderColor: "divider",
+                  bgcolor: "background.paper",
                   color: "text.primary",
                 }}
               >
@@ -149,8 +190,8 @@ export function WorkspaceSidebar({
         </Box>
 
         {isCollapsed ? (
-            <Stack spacing={1} sx={{ alignItems: "center" }}>
-            <Tooltip title={`Project: ${activeProject.title}`} placement="right">
+            <Stack spacing={1} sx={{ alignItems: "center", flex: 1, minHeight: 0, overflowY: "auto", pr: 0.25 }}>
+            <Tooltip title={`Project: ${activeProjectTitle ?? activeProject?.title ?? "No active project"}`} placement="right">
               <IconButton aria-label="Open project switcher" onClick={openProjectMenu} sx={collapsedRailButtonSx}>
                 <MoreHorizRounded fontSize="small" />
               </IconButton>
@@ -174,13 +215,13 @@ export function WorkspaceSidebar({
                       sx={(theme) => ({
                         ...getStrongSelectedListItemSx(theme, selected),
                           minWidth: 0,
-                          width: 44,
+                          width: 64,
                           height: 44,
                           px: 0,
                           py: 0,
                           justifyContent: "center",
-                          borderRadius: 1.25,
-                          bgcolor: selected ? undefined : "rgba(250,252,255,0.9)",
+                          borderRadius: 999,
+                          bgcolor: selected ? undefined : "background.paper",
                         })}
                     >
                       <ListItemIcon sx={{ minWidth: 0, color: "inherit", justifyContent: "center" }}>
@@ -193,7 +234,7 @@ export function WorkspaceSidebar({
             </List>
 
             <Tooltip title={`Now editing: ${getWorkspaceSurfaceLabel(activeSurface)}`} placement="right">
-               <Card sx={{ width: 44, bgcolor: "rgba(248,251,255,0.96)", borderRadius: 1.75 }}>
+               <Card sx={{ width: 64, bgcolor: "background.paper", borderRadius: 999 }}>
                 <CardContent sx={{ p: 1, display: "flex", justifyContent: "center" }}>
                   <HubRounded color="primary" fontSize="small" />
                 </CardContent>
@@ -202,24 +243,36 @@ export function WorkspaceSidebar({
           </Stack>
         ) : (
           <>
+            <Stack spacing={1.2} sx={{ flex: 1, minHeight: 0, overflowY: "auto", pr: 0.35 }}>
             <Box>
               <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "stretch", gap: 1, minWidth: 0 }}>
                 <Typography variant="overline" color="text.secondary">
                   Projects
                 </Typography>
-                <Button
-                  onClick={onOpenCreateProject}
-                  size="small"
-                  startIcon={<AddRounded />}
-                  variant="outlined"
-                  sx={{ borderRadius: 1.25, px: 1.35, py: 0.7, alignSelf: { xs: "flex-start", sm: "auto", xl: "flex-start" } }}
-                >
-                  New project
-                </Button>
+                <Stack spacing={0.8} sx={{ alignItems: "stretch", width: "100%" }}>
+                  <Button
+                    onClick={openProjectMenu}
+                    size="small"
+                    startIcon={<SwapHorizRounded />}
+                    variant="outlined"
+                    sx={projectActionButtonSx}
+                  >
+                    Switch project
+                  </Button>
+                  <Button
+                    onClick={onOpenCreateProject}
+                    size="small"
+                    startIcon={<AddRounded />}
+                    variant="outlined"
+                    sx={projectActionButtonSx}
+                  >
+                    New project
+                  </Button>
+                </Stack>
               </Box>
 
               <List disablePadding sx={{ mt: 0.9, display: "grid", gap: 0.5 }}>
-                {projects.map((entry) => (
+                {visibleProjects.map((entry) => (
                   <ListItemButton
                     key={entry.id}
                     onClick={() => onSelectProject(entry.id)}
@@ -229,8 +282,8 @@ export function WorkspaceSidebar({
                         alignItems: "flex-start",
                         px: 1.25,
                         py: 1,
-                        borderRadius: 1.25,
-                        bgcolor: entry.id === activeProjectId ? undefined : "rgba(250,252,255,0.9)",
+                        borderRadius: 2,
+                        bgcolor: entry.id === activeProjectId ? undefined : "background.paper",
                       })}
                   >
                     <Box sx={{ minWidth: 0, width: "100%" }}>
@@ -238,27 +291,163 @@ export function WorkspaceSidebar({
                         {entry.title}
                       </Typography>
                       <Typography className={contrastGuardClassNames.secondary} sx={{ mt: 0.35, fontSize: 12.5, overflowWrap: "anywhere" }}>
-                        {entry.genre} · {entry.status}
+                        {entry.genre} · {entry.status} · {entry.lifecycleState}
                       </Typography>
                     </Box>
                   </ListItemButton>
                 ))}
               </List>
+
+              {isWritingVariant ? null : (
+                <Stack spacing={0.25} sx={{ mt: 0.8 }}>
+                  <FormControlLabel
+                    control={<Switch checked={showArchived} onChange={(event) => setShowArchived(event.target.checked)} size="small" />}
+                    label="Show archived"
+                  />
+                  <FormControlLabel
+                    control={<Switch checked={showTrashed} onChange={(event) => setShowTrashed(event.target.checked)} size="small" />}
+                    label="Show trashed"
+                  />
+                </Stack>
+              )}
+              {!activeProjects.length ? (
+                <Alert severity="info" sx={{ mt: 1 }} variant="outlined">
+                  No active projects. Restore one or create a new project.
+                </Alert>
+              ) : null}
             </Box>
 
-            <Card sx={{ bgcolor: "rgba(255,255,255,0.88)", borderRadius: 1.75 }}>
-              <CardContent sx={{ p: 1.75 }}>
-                <Typography variant="overline" color="text.secondary">
-                  Workspace
-                </Typography>
-                <Typography variant="h3" sx={{ mt: 0.75, overflowWrap: "anywhere" }}>
-                  {project.title}
-                </Typography>
-                <Typography color="text.secondary" sx={{ mt: 1, lineHeight: 1.65, overflowWrap: "anywhere" }}>
-                  A clean manuscript-first workspace with adjacent reference and planning surfaces.
-                </Typography>
-              </CardContent>
-            </Card>
+            {!isWritingVariant && (showArchived || showTrashed) && (archivedProjects.length || trashedProjects.length) ? (
+               <Card sx={{ bgcolor: alpha(brandTokens.palette.background.panel, 0.92), borderRadius: 2 }}>
+                <CardContent sx={{ p: 1.5 }}>
+                  <Typography variant="overline" color="text.secondary">
+                    Lifecycle controls
+                  </Typography>
+                  <Stack spacing={1} sx={{ mt: 0.8 }}>
+                    {showArchived
+                      ? archivedProjects.map((entry) => (
+                          <Stack key={`archived-${entry.id}`} spacing={0.6} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, p: 1 }}>
+                            <Typography sx={{ fontWeight: 700, fontSize: 13, overflowWrap: "anywhere" }}>{entry.title}</Typography>
+                            <Stack direction="row" spacing={0.7} sx={{ flexWrap: "wrap" }}>
+                              <Button size="small" variant="outlined" sx={projectActionButtonSx} onClick={() => void onRestoreProject(entry.id)}>
+                                Restore
+                              </Button>
+                              <Button
+                                color="error"
+                                size="small"
+                                variant="outlined"
+                                sx={projectActionButtonSx}
+                                onClick={() => {
+                                  if (window.confirm(`Move \"${entry.title}\" to trash?`)) {
+                                    void onMoveProjectToTrash(entry.id);
+                                  }
+                                }}
+                              >
+                                Trash
+                              </Button>
+                            </Stack>
+                          </Stack>
+                        ))
+                      : null}
+                    {showTrashed
+                      ? trashedProjects.map((entry) => (
+                          <Stack key={`trashed-${entry.id}`} spacing={0.6} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, p: 1 }}>
+                            <Typography sx={{ fontWeight: 700, fontSize: 13, overflowWrap: "anywhere" }}>{entry.title}</Typography>
+                            <Stack direction="row" spacing={0.7} sx={{ flexWrap: "wrap" }}>
+                              <Button size="small" variant="outlined" sx={projectActionButtonSx} onClick={() => void onRestoreProject(entry.id)}>
+                                Restore
+                              </Button>
+                              <Button
+                                color="error"
+                                size="small"
+                                variant="contained"
+                                sx={dangerActionButtonSx}
+                                onClick={() => {
+                                  if (window.confirm(`Permanently delete \"${entry.title}\"? This cannot be undone.`)) {
+                                    void onPermanentlyDeleteTrashedProjects([entry.id]);
+                                  }
+                                }}
+                              >
+                                Delete permanently
+                              </Button>
+                            </Stack>
+                          </Stack>
+                        ))
+                      : null}
+
+                    {showTrashed && trashedProjects.length ? (
+                      <Stack spacing={0.75} sx={{ mt: 0.5, p: 1, border: "1px dashed", borderColor: "divider", borderRadius: 2 }}>
+                        <Typography variant="overline" color="text.secondary">
+                          Permanent delete
+                        </Typography>
+                        <Typography color="text.secondary" sx={{ fontSize: 12.5, lineHeight: 1.45 }}>
+                          Type <strong>DELETE</strong> to empty trash permanently.
+                        </Typography>
+                        <TextField
+                          fullWidth
+                          onChange={(event) => setTrashConfirmationText(event.target.value)}
+                          placeholder="Type DELETE"
+                          size="small"
+                          value={trashConfirmationText}
+                        />
+                        <Button
+                          color="error"
+                          disabled={trashConfirmationText.trim() !== "DELETE"}
+                          onClick={() => {
+                            void onPermanentlyDeleteTrashedProjects(trashedProjects.map((project) => project.id));
+                            setTrashConfirmationText("");
+                          }}
+                          size="small"
+                          sx={dangerActionButtonSx}
+                          variant="contained"
+                        >
+                          Empty trash permanently
+                        </Button>
+                      </Stack>
+                    ) : null}
+                  </Stack>
+                </CardContent>
+              </Card>
+            ) : null}
+
+            {isWritingVariant ? null : <Divider />}
+
+            {!isWritingVariant && activeProject?.lifecycleState === "active" ? (
+              <Stack direction="row" spacing={0.75} sx={{ flexWrap: "wrap" }}>
+                <Button color="warning" size="small" variant="outlined" sx={projectActionButtonSx} onClick={() => void onArchiveProject(activeProject.id)}>
+                  Archive current
+                </Button>
+                <Button
+                  color="error"
+                  size="small"
+                  sx={projectActionButtonSx}
+                  variant="outlined"
+                  onClick={() => {
+                    if (window.confirm(`Move \"${activeProject.title}\" to trash?`)) {
+                      void onMoveProjectToTrash(activeProject.id);
+                    }
+                  }}
+                >
+                  Trash current
+                </Button>
+              </Stack>
+            ) : null}
+
+            {isWritingVariant ? null : (
+              <Card sx={{ bgcolor: alpha(brandTokens.palette.background.panel, 0.92), borderRadius: 2 }}>
+                <CardContent sx={{ p: 1.75 }}>
+                  <Typography variant="overline" color="text.secondary">
+                    Workspace
+                  </Typography>
+                  <Typography variant="h3" sx={{ mt: 0.75, overflowWrap: "anywhere" }}>
+                    {activeProject?.title ?? "No active project"}
+                  </Typography>
+                  <Typography color="text.secondary" sx={{ mt: 1, lineHeight: 1.65, overflowWrap: "anywhere" }}>
+                    A clean manuscript-first workspace with adjacent reference and planning surfaces.
+                  </Typography>
+                </CardContent>
+              </Card>
+            )}
 
             <Box>
               <Typography variant="overline" color="text.secondary">
@@ -277,7 +466,7 @@ export function WorkspaceSidebar({
                           px: 1.05,
                           py: 0.82,
                           alignItems: "flex-start",
-                          borderRadius: 1.25,
+                          borderRadius: 2,
                         })}
                     >
                        <ListItemIcon sx={{ minWidth: 32, color: "inherit", pt: 0.1 }}>{surfaceIcons[surface]}</ListItemIcon>
@@ -285,17 +474,19 @@ export function WorkspaceSidebar({
                         <Typography className={contrastGuardClassNames.primary} sx={{ fontWeight: 700, fontSize: 14, overflowWrap: "anywhere" }}>
                           {getWorkspaceSurfaceLabel(surface)}
                         </Typography>
-                        <Typography
-                          className={contrastGuardClassNames.secondary}
-                          sx={{
-                             mt: 0.25,
-                             fontSize: 12,
-                             lineHeight: 1.45,
-                             overflowWrap: "anywhere",
+                        {isWritingVariant ? null : (
+                          <Typography
+                            className={contrastGuardClassNames.secondary}
+                            sx={{
+                              mt: 0.25,
+                              fontSize: 12,
+                              lineHeight: 1.45,
+                              overflowWrap: "anywhere",
                             }}
                           >
-                          {surfaceDescriptions[surface]}
-                        </Typography>
+                            {surfaceDescriptions[surface]}
+                          </Typography>
+                        )}
                       </Box>
                     </ListItemButton>
                   );
@@ -303,30 +494,40 @@ export function WorkspaceSidebar({
               </List>
             </Box>
 
-            <Card sx={{ mt: "auto", bgcolor: "rgba(248,251,255,0.92)", borderRadius: 1.75 }}>
-              <CardContent sx={{ p: 1.75 }}>
-                <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
-                  <HubRounded color="primary" fontSize="small" sx={{ mt: 0.25 }} />
-                  <Box sx={{ minWidth: 0 }}>
-                    <Typography variant="overline" color="text.secondary">
-                      Now editing
-                    </Typography>
-                    <Typography variant="h3" sx={{ mt: 0.5, overflowWrap: "anywhere" }}>
-                      {getWorkspaceSurfaceLabel(activeSurface)}
-                    </Typography>
-                    <Typography color="text.secondary" sx={{ mt: 0.9, lineHeight: 1.65, overflowWrap: "anywhere" }}>
-                      Writing keeps the inspector open. Other surfaces expand the canvas for cleaner page-level work.
-                    </Typography>
+            {isWritingVariant ? null : (
+              <Card sx={{ mt: "auto", bgcolor: alpha(brandTokens.palette.background.panelMuted, 0.92), borderRadius: 2 }}>
+                <CardContent sx={{ p: 1.75 }}>
+                  <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
+                    <HubRounded color="primary" fontSize="small" sx={{ mt: 0.25 }} />
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="overline" color="text.secondary">
+                        Now editing
+                      </Typography>
+                      <Typography variant="h3" sx={{ mt: 0.5, overflowWrap: "anywhere" }}>
+                        {getWorkspaceSurfaceLabel(activeSurface)}
+                      </Typography>
+                      <Typography color="text.secondary" sx={{ mt: 0.9, lineHeight: 1.65, overflowWrap: "anywhere" }}>
+                        Writing keeps the inspector open. Other surfaces expand the canvas for cleaner page-level work.
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
+            </Stack>
           </>
         )}
       </Stack>
 
-      <Menu anchorEl={projectMenuAnchor} open={Boolean(projectMenuAnchor)} onClose={closeProjectMenu} anchorOrigin={{ vertical: "bottom", horizontal: "right" }} transformOrigin={{ vertical: "top", horizontal: "left" }}>
-        {projects.map((entry) => (
+      <Menu
+        anchorEl={projectMenuAnchor}
+        open={Boolean(projectMenuAnchor)}
+        onClose={closeProjectMenu}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "left" }}
+        slotProps={{ paper: { sx: { maxWidth: 320 } } }}
+      >
+        {visibleProjects.map((entry) => (
           <MenuItem
             key={entry.id}
             onClick={() => {
@@ -334,8 +535,14 @@ export function WorkspaceSidebar({
               closeProjectMenu();
             }}
             selected={entry.id === activeProjectId}
+            sx={{ whiteSpace: "normal", overflowWrap: "anywhere", lineHeight: 1.35, alignItems: "flex-start" }}
           >
-            {entry.title}
+            <Box sx={{ minWidth: 0 }}>
+              <Typography sx={{ fontWeight: 700, fontSize: 14, overflowWrap: "anywhere" }}>{entry.title}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25, overflowWrap: "anywhere" }}>
+                {entry.genre} · {entry.status} · {entry.lifecycleState}
+              </Typography>
+            </Box>
           </MenuItem>
         ))}
       </Menu>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Card, CardContent, Chip, Skeleton, Stack, Typography } from "@mui/material";
+import { Box, Skeleton, Stack, Typography } from "@mui/material";
 import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
@@ -74,37 +74,19 @@ export function SceneBodyEditor({ scene, onSave }: SceneBodyEditorProps) {
 
   if (!scene) {
     return (
-      <Card sx={{ bgcolor: "rgba(248,251,255,0.76)" }}>
-        <CardContent>
+      <Box sx={{ minHeight: 420, border: "1px solid", borderColor: "divider", bgcolor: "rgba(255,252,245,0.88)", p: { xs: 2, xl: 2.35 } }}>
           <Typography variant="overline" color="text.secondary">
             Scene body
           </Typography>
           <Typography color="text.secondary" sx={{ mt: 1.25 }}>
             Select a scene to begin rich-text drafting.
           </Typography>
-        </CardContent>
-      </Card>
+      </Box>
     );
   }
 
   return (
-    <Card sx={{ bgcolor: "rgba(255,255,255,0.99)", boxShadow: "0 18px 38px rgba(20,32,51,0.06)", border: "1px solid rgba(79, 98, 126, 0.12)" }}>
-      <CardContent sx={{ p: { xs: 2, xl: 2.2 } }}>
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: "space-between", gap: 1.25, alignItems: { xs: "flex-start", md: "center" }, mb: 1.6 }}>
-          <Box>
-            <Typography variant="overline" color="text.secondary">
-              Scene body
-            </Typography>
-            <Typography variant="h3" sx={{ mt: 0.5 }}>
-              Draft canvas
-            </Typography>
-          </Box>
-          <Chip label="Saves on blur" size="small" sx={{ bgcolor: "rgba(248,251,255,0.92)" }} variant="outlined" />
-        </Box>
-
-        {isClientReady && editor ? <EditorContent editor={editor} /> : <EditorLoadingState />}
-      </CardContent>
-    </Card>
+    <Box>{isClientReady && editor ? <EditorContent editor={editor} /> : <EditorLoadingState />}</Box>
   );
 }
 

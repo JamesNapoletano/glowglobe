@@ -1,5 +1,4 @@
 # Neuroplast Working Files
-#instruction
 
 This folder is the day-to-day working area for Neuroplast inside a repository.
 

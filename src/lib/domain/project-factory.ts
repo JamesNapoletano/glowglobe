@@ -1,7 +1,9 @@
 import type {
+  CharacterStatus,
   Chapter,
   Project,
   ProjectStatus,
+  RelationshipType,
   RichTextDocument,
   Scene,
 } from "@/lib/domain/types";
@@ -12,8 +14,18 @@ export type CreateProjectInput = {
   description: string;
 };
 
+export type UpdateProjectDetailsInput = {
+  title: string;
+  genre: string;
+  description: string;
+  status: ProjectStatus;
+};
+
+export type ProjectLifecycleState = Project["lifecycleState"];
+
 export type SceneLinkPayload = {
   characterIds: string[];
+  sociumIds: string[];
   locationIds: string[];
   technologyEntryIds: string[];
   timelineEventIds: string[];
@@ -21,12 +33,69 @@ export type SceneLinkPayload = {
   glossaryEntryIds: string[];
 };
 
-export type CharacterInput = { name: string; role: string; arc: string };
-export type RelationshipInput = { sourceCharacterId: string; targetCharacterId: string; description: string };
+export type CharacterInput = {
+  name: string;
+  role: string;
+  summary: string;
+  arc: string;
+  status: CharacterStatus;
+  aliases: string;
+  pronouns: string;
+  age: string;
+  birthDate: string;
+  gender: string;
+  speciesId?: string;
+  occupation: string;
+  sociumId?: string;
+  residence: string;
+  origin: string;
+  firstAppearance: string;
+  appearance: string;
+  distinguishingFeatures: string;
+  skills: string;
+  goals: string;
+  fears: string;
+  internalConflict: string;
+  externalConflict: string;
+  background: string;
+  personality: string;
+  voice: string;
+  mannerisms: string;
+  beliefs: string;
+  secrets: string;
+  unresolvedThreads: string;
+  notes: string;
+  quote: string;
+};
+export type RelationshipInput = {
+  sourceCharacterId: string;
+  targetCharacterId: string;
+  type: RelationshipType;
+  notes: string;
+};
+export type SociumInput = {
+  name: string;
+  type: string;
+  summary: string;
+  leadership: string;
+  headquarters: string;
+  territory: string;
+  scope: string;
+  goals: string;
+  beliefs: string;
+  resources: string;
+  methods: string;
+  allies: string;
+  rivals: string;
+  publicReputation: string;
+  internalConflicts: string;
+  notes: string;
+};
 export type TechnologyEntryInput = { name: string; summary: string; ruleNotesText: string };
 export type LocationInput = { name: string; summary: string; regionName: string };
 export type RegionInput = { name: string; summary: string };
 export type PlanetInput = { name: string; summary: string };
+export type SpeciesInput = { name: string; summary: string; traits: string; lifespan: string; cultureNotes: string; originWorld: string };
 export type TimelineEventInput = { title: string; summary: string; sequence: number };
 export type CorkboardCardInput = { title: string; summary: string; linkedSceneId?: string };
 export type PlotThreadInput = { name: string; summary: string };
@@ -55,6 +124,7 @@ export function createProjectFromInput(input: CreateProjectInput): Project {
     genre: input.genre.trim(),
     description: summary,
     status: createInitialProjectStatus(summary),
+    lifecycleState: "active",
     books: [
       {
         id: bookId,
@@ -77,10 +147,12 @@ export function createProjectFromInput(input: CreateProjectInput): Project {
     documents: [],
     characters: [],
     relationships: [],
+    sociums: [],
     technologyEntries: [],
     locations: [],
     regions: [],
     planets: [],
+    species: [],
     timelineEvents: [],
     corkboardCards: [],
     plotThreads: [],
@@ -92,6 +164,47 @@ export function createProjectFromInput(input: CreateProjectInput): Project {
     loreNotes: [],
     researchNotes: [],
     revisionSnapshots: [],
+  };
+}
+
+export function updateProjectDetails(project: Project, input: UpdateProjectDetailsInput): Project {
+  const timestamp = new Date().toISOString();
+  const nextTitle = input.title.trim() || project.title;
+  const nextGenre = input.genre.trim() || project.genre;
+  const nextDescription = input.description.trim() || project.description;
+  const primaryBook = project.books[0];
+  const shouldSyncPrimaryBookTitle = primaryBook ? primaryBook.title.trim() === project.title.trim() : false;
+
+  const nextBooks = project.books.map((book, index) => {
+    if (index !== 0 || !shouldSyncPrimaryBookTitle) {
+      return book;
+    }
+
+    return {
+      ...book,
+      updatedAt: timestamp,
+      title: nextTitle,
+    };
+  });
+
+  return {
+    ...project,
+    updatedAt: timestamp,
+    title: nextTitle,
+    genre: nextGenre,
+    description: nextDescription,
+    status: input.status,
+    books: nextBooks,
+  };
+}
+
+export function moveProjectToLifecycleState(project: Project, lifecycleState: ProjectLifecycleState): Project {
+  const timestamp = new Date().toISOString();
+
+  return {
+    ...project,
+    updatedAt: timestamp,
+    lifecycleState,
   };
 }
 
@@ -143,6 +256,7 @@ export function createScene(
     ],
     editorDocument: createEmptyDocument(),
     characterIds: [],
+    sociumIds: [],
     locationIds: [],
     technologyEntryIds: [],
     timelineEventIds: [],
@@ -208,6 +322,71 @@ export function addSceneToChapter(project: Project, chapterId: string, input?: {
   };
 }
 
+export function removeChapterFromProject(project: Project, chapterId: string) {
+  const timestamp = new Date().toISOString();
+  const primaryBook = project.books[0];
+
+  if (!primaryBook || primaryBook.chapters.length <= 1 || !primaryBook.chapters.some((chapter) => chapter.id === chapterId)) {
+    const fallbackChapter = primaryBook?.chapters[0] ?? null;
+
+    return {
+      project,
+      deleted: false,
+      fallbackChapterId: fallbackChapter?.id ?? null,
+      fallbackSceneId: fallbackChapter?.scenes[0]?.id ?? null,
+    };
+  }
+
+  const remainingChapters = primaryBook.chapters.filter((chapter) => chapter.id !== chapterId);
+  const removedChapterIndex = primaryBook.chapters.findIndex((chapter) => chapter.id === chapterId);
+  const fallbackChapter = remainingChapters[Math.min(removedChapterIndex, remainingChapters.length - 1)] ?? remainingChapters[0] ?? null;
+
+  return {
+    project: {
+      ...project,
+      updatedAt: timestamp,
+      books: [
+        {
+          ...primaryBook,
+          updatedAt: timestamp,
+          chapters: remainingChapters,
+        },
+        ...project.books.slice(1),
+      ],
+    },
+    deleted: true,
+    fallbackChapterId: fallbackChapter?.id ?? null,
+    fallbackSceneId: fallbackChapter?.scenes[0]?.id ?? null,
+  };
+}
+
+export function removeSceneFromChapter(project: Project, chapterId: string, sceneId: string) {
+  const timestamp = new Date().toISOString();
+  const targetChapter = project.books[0]?.chapters.find((chapter) => chapter.id === chapterId);
+
+  if (!targetChapter || targetChapter.scenes.length <= 1 || !targetChapter.scenes.some((scene) => scene.id === sceneId)) {
+    return {
+      project,
+      deleted: false,
+      fallbackSceneId: targetChapter?.scenes[0]?.id ?? null,
+    };
+  }
+
+  const nextScenes = targetChapter.scenes.filter((scene) => scene.id !== sceneId);
+  const removedSceneIndex = targetChapter.scenes.findIndex((scene) => scene.id === sceneId);
+  const fallbackScene = nextScenes[Math.min(removedSceneIndex, nextScenes.length - 1)] ?? nextScenes[0] ?? null;
+
+  return {
+    project: updatePrimaryBookChapter(project, chapterId, timestamp, (chapter) => ({
+      ...chapter,
+      updatedAt: timestamp,
+      scenes: chapter.scenes.filter((scene) => scene.id !== sceneId),
+    })),
+    deleted: true,
+    fallbackSceneId: fallbackScene?.id ?? null,
+  };
+}
+
 export function updateSceneMetadata(project: Project, chapterId: string, sceneId: string, input: { title: string; summary: string }) {
   const timestamp = new Date().toISOString();
 
@@ -248,7 +427,36 @@ export function upsertCharacter(project: Project, input: CharacterInput, charact
     updatedAt: timestamp,
     name: input.name.trim() || existing?.name || "Untitled character",
     role: input.role.trim(),
+    summary: input.summary.trim(),
     arc: input.arc.trim(),
+    status: normalizeCharacterStatus(input.status, existing?.status),
+    aliases: input.aliases.trim(),
+    pronouns: input.pronouns.trim(),
+    age: input.age.trim(),
+    birthDate: input.birthDate.trim(),
+    gender: input.gender.trim(),
+    speciesId: input.speciesId?.trim() || undefined,
+    occupation: input.occupation.trim(),
+    sociumId: input.sociumId?.trim() || undefined,
+    residence: input.residence.trim(),
+    origin: input.origin.trim(),
+    firstAppearance: input.firstAppearance.trim(),
+    appearance: input.appearance.trim(),
+    distinguishingFeatures: input.distinguishingFeatures.trim(),
+    skills: input.skills.trim(),
+    goals: input.goals.trim(),
+    fears: input.fears.trim(),
+    internalConflict: input.internalConflict.trim(),
+    externalConflict: input.externalConflict.trim(),
+    background: input.background.trim(),
+    personality: input.personality.trim(),
+    voice: input.voice.trim(),
+    mannerisms: input.mannerisms.trim(),
+    beliefs: input.beliefs.trim(),
+    secrets: input.secrets.trim(),
+    unresolvedThreads: input.unresolvedThreads.trim(),
+    notes: input.notes.trim(),
+    quote: input.quote.trim(),
     relationshipIds: existing?.relationshipIds ?? [],
   }));
 }
@@ -256,7 +464,7 @@ export function upsertCharacter(project: Project, input: CharacterInput, charact
 export function removeCharacter(project: Project, characterId: string) {
   const timestamp = new Date().toISOString();
 
-  return {
+  return syncCharacterRelationshipIds({
     ...project,
     updatedAt: timestamp,
     characters: project.characters.filter((character) => character.id !== characterId),
@@ -280,22 +488,51 @@ export function removeCharacter(project: Project, characterId: string) {
           }
         : book,
     ),
-  };
+  });
 }
 
 export function upsertRelationship(project: Project, input: RelationshipInput, relationshipId?: string) {
-  return upsertCollectionItem(project, "relationships", relationshipId, (timestamp, id, existing) => ({
+  return syncCharacterRelationshipIds(upsertCollectionItem(project, "relationships", relationshipId, (timestamp, id, existing) => ({
     id,
     createdAt: existing?.createdAt ?? timestamp,
     updatedAt: timestamp,
     sourceCharacterId: input.sourceCharacterId,
     targetCharacterId: input.targetCharacterId,
-    description: input.description.trim(),
-  }));
+    type: normalizeRelationshipType(input.type, existing?.type),
+    notes: input.notes.trim(),
+  })));
 }
 
 export function removeRelationship(project: Project, relationshipId: string) {
-  return removeCollectionItem(project, "relationships", relationshipId);
+  return syncCharacterRelationshipIds(removeCollectionItem(project, "relationships", relationshipId));
+}
+
+export function upsertSocium(project: Project, input: SociumInput, sociumId?: string) {
+  return upsertCollectionItem(project, "sociums", sociumId, (timestamp, id, existing) => ({
+    id,
+    createdAt: existing?.createdAt ?? timestamp,
+    updatedAt: timestamp,
+    name: input.name.trim() || existing?.name || "Untitled socium",
+    type: normalizeSociumType(input.type, existing?.type),
+    summary: input.summary.trim(),
+    leadership: input.leadership.trim(),
+    headquarters: input.headquarters.trim(),
+    territory: input.territory.trim(),
+    scope: input.scope.trim(),
+    goals: input.goals.trim(),
+    beliefs: input.beliefs.trim(),
+    resources: input.resources.trim(),
+    methods: input.methods.trim(),
+    allies: input.allies.trim(),
+    rivals: input.rivals.trim(),
+    publicReputation: input.publicReputation.trim(),
+    internalConflicts: input.internalConflicts.trim(),
+    notes: input.notes.trim(),
+  }));
+}
+
+export function removeSocium(project: Project, sociumId: string) {
+  return removeCollectionItem(project, "sociums", sociumId);
 }
 
 export function upsertTechnologyEntry(project: Project, input: TechnologyEntryInput, technologyEntryId?: string) {
@@ -401,6 +638,34 @@ export function upsertPlanet(project: Project, input: PlanetInput, planetId?: st
 
 export function removePlanet(project: Project, planetId: string) {
   return removeCollectionItem(project, "planets", planetId);
+}
+
+export function upsertSpecies(project: Project, input: SpeciesInput, speciesId?: string) {
+  return upsertCollectionItem(project, "species", speciesId, (timestamp, id, existing) => ({
+    id,
+    createdAt: existing?.createdAt ?? timestamp,
+    updatedAt: timestamp,
+    name: input.name.trim() || existing?.name || "Untitled species",
+    summary: input.summary.trim(),
+    traits: input.traits.trim(),
+    lifespan: input.lifespan.trim(),
+    cultureNotes: input.cultureNotes.trim(),
+    originWorld: input.originWorld.trim(),
+  }));
+}
+
+export function removeSpecies(project: Project, speciesId: string) {
+  const timestamp = new Date().toISOString();
+
+  return {
+    ...removeCollectionItem(project, "species", speciesId),
+    characters: project.characters.map((character) => ({
+      ...character,
+      updatedAt: timestamp,
+      speciesId: character.speciesId === speciesId ? undefined : character.speciesId,
+    })),
+    updatedAt: timestamp,
+  };
 }
 
 export function upsertTimelineEvent(project: Project, input: TimelineEventInput, timelineEventId?: string) {
@@ -733,10 +998,12 @@ function removeCollectionItem<K extends CollectionKeys>(project: Project, key: K
 type CollectionKeys =
   | "characters"
   | "relationships"
+  | "sociums"
   | "technologyEntries"
   | "locations"
   | "regions"
   | "planets"
+  | "species"
   | "timelineEvents"
   | "corkboardCards"
   | "plotThreads"
@@ -754,6 +1021,8 @@ function getCollectionPrefix(key: CollectionKeys): string {
       return "character";
     case "relationships":
       return "relationship";
+    case "sociums":
+      return "socium";
     case "technologyEntries":
       return "technology";
     case "locations":
@@ -762,6 +1031,8 @@ function getCollectionPrefix(key: CollectionKeys): string {
       return "region";
     case "planets":
       return "planet";
+    case "species":
+      return "species";
     case "timelineEvents":
       return "timeline";
     case "corkboardCards":
@@ -783,4 +1054,78 @@ function getCollectionPrefix(key: CollectionKeys): string {
     case "researchNotes":
       return "research";
   }
+}
+
+function normalizeSociumType(input: string, fallback?: Project["sociums"][number]["type"]) {
+  switch (input) {
+    case "faction":
+    case "clan":
+    case "guild":
+    case "kingdom":
+    case "corporation":
+    case "religion":
+    case "tribe":
+    case "order":
+    case "house":
+    case "other":
+      return input;
+    default:
+      return fallback ?? "faction";
+  }
+}
+
+function normalizeCharacterStatus(input?: CharacterStatus, fallback?: CharacterStatus): CharacterStatus {
+  switch (input) {
+    case "alive":
+    case "dead":
+    case "missing":
+    case "unknown":
+      return input;
+    default:
+      return fallback ?? "alive";
+  }
+}
+
+function normalizeRelationshipType(input?: RelationshipType, fallback?: RelationshipType): RelationshipType {
+  switch (input) {
+    case "family":
+    case "friend":
+    case "ally":
+    case "rival":
+    case "enemy":
+    case "mentor":
+    case "student":
+    case "romantic":
+    case "subordinate":
+    case "leader":
+      return input;
+    default:
+      return fallback ?? "ally";
+  }
+}
+
+function syncCharacterRelationshipIds(project: Project): Project {
+  const relationshipIdsByCharacter = new Map<string, string[]>();
+
+  project.characters.forEach((character) => {
+    relationshipIdsByCharacter.set(character.id, []);
+  });
+
+  project.relationships.forEach((relationship) => {
+    if (relationshipIdsByCharacter.has(relationship.sourceCharacterId)) {
+      relationshipIdsByCharacter.get(relationship.sourceCharacterId)?.push(relationship.id);
+    }
+
+    if (relationshipIdsByCharacter.has(relationship.targetCharacterId)) {
+      relationshipIdsByCharacter.get(relationship.targetCharacterId)?.push(relationship.id);
+    }
+  });
+
+  return {
+    ...project,
+    characters: project.characters.map((character) => ({
+      ...character,
+      relationshipIds: relationshipIdsByCharacter.get(character.id) ?? [],
+    })),
+  };
 }

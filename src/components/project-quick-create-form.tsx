@@ -35,7 +35,7 @@ export function ProjectQuickCreateForm({
     reset({
       title: "",
       genre: values.genre,
-      description: "",
+      description: values.description ?? "",
     });
   };
 
@@ -45,14 +45,15 @@ export function ProjectQuickCreateForm({
         <Typography variant="overline" color="text.secondary">
           Quick create
         </Typography>
-        <Typography variant="h3">New project scaffold</Typography>
-        <Typography color="text.secondary">
+        <Typography variant="h3" sx={{ overflowWrap: "anywhere" }}>New project scaffold</Typography>
+        <Typography color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
           Create a real project in the local workspace and switch into it immediately.
         </Typography>
       </Stack>
 
       <Stack component="form" noValidate onSubmit={handleSubmit(onSubmit)} spacing={2.25}>
         <TextField
+          fullWidth
           error={Boolean(errors.title)}
           helperText={errors.title?.message}
           label="Title"
@@ -60,9 +61,10 @@ export function ProjectQuickCreateForm({
           {...register("title", { required: "A project title is required." })}
         />
 
-        <TextField label="Genre" placeholder="Genre" {...register("genre", { required: true })} />
+        <TextField fullWidth label="Genre" placeholder="Genre" {...register("genre", { required: true })} />
 
         <TextField
+          fullWidth
           label="Description"
           minRows={4}
           multiline
@@ -75,7 +77,7 @@ export function ProjectQuickCreateForm({
         </Button>
       </Stack>
 
-      {preview ? <Alert severity="success" variant="outlined">{preview}</Alert> : null}
+      {preview ? <Alert severity="success" variant="outlined" sx={{ overflowWrap: "anywhere" }}>{preview}</Alert> : null}
     </Stack>
   );
 }

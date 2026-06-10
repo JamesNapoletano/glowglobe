@@ -9,12 +9,12 @@ export function getStrongSelectedListItemSx(theme: Theme, selected: boolean) {
   return {
     border: "1px solid",
     borderColor: selected ? theme.palette.primary.dark : alpha(theme.palette.text.primary, 0.12),
-    bgcolor: selected ? theme.palette.primary.main : "rgba(250,252,255,0.62)",
+    bgcolor: selected ? theme.palette.primary.main : alpha(theme.palette.background.paper, 0.74),
     backgroundImage: selected
       ? `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`
       : "none",
     color: selected ? theme.palette.primary.contrastText : theme.palette.text.primary,
-    boxShadow: selected ? "0 12px 24px rgba(49,90,146,0.18)" : "none",
+    boxShadow: selected ? `0 12px 24px ${alpha(theme.palette.primary.dark, 0.22)}` : "none",
     "& .MuiListItemIcon-root": {
       color: "inherit",
     },
@@ -35,9 +35,9 @@ export function getSoftSelectedListItemSx(theme: Theme, selected: boolean) {
   return {
     border: "1px solid",
     borderColor: selected ? alpha(theme.palette.primary.main, 0.28) : theme.palette.divider,
-    bgcolor: selected ? alpha(theme.palette.primary.main, 0.12) : "rgba(248,251,255,0.84)",
+    bgcolor: selected ? alpha(theme.palette.primary.main, 0.14) : alpha(theme.palette.background.paper, 0.84),
     color: theme.palette.text.primary,
-    boxShadow: selected ? "0 10px 22px rgba(49,90,146,0.10)" : "none",
+    boxShadow: selected ? `0 10px 22px ${alpha(theme.palette.primary.dark, 0.12)}` : "none",
     "& .MuiListItemIcon-root": {
       color: "inherit",
     },

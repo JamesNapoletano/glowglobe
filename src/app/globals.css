@@ -1,9 +1,13 @@
 :root {
-  --font-editor: Georgia, "Times New Roman", serif;
-  --editor-surface: rgba(255, 252, 246, 0.98);
-  --editor-border: rgba(104, 112, 128, 0.16);
-  --surface-alt: rgba(243, 247, 251, 0.88);
-  --foreground: #162033;
+  --font-ui: "Inter", "Roboto", "Helvetica", "Arial", sans-serif;
+  --font-manuscript: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --editor-surface: #fffaf2;
+  --editor-border: rgba(145, 104, 72, 0.28);
+  --surface-alt: #f7f1e7;
+  --foreground: #241c14;
+  --editor-selection: rgba(155, 170, 141, 0.18);
+  --editor-focus-ring: rgba(120, 138, 107, 0.28);
+  --editor-placeholder: rgba(123, 112, 95, 0.72);
 }
 
 .ProseMirror p {
@@ -11,27 +15,35 @@
 }
 
 .editor-prose {
-  font-family: var(--font-editor);
+  font-family: var(--font-manuscript);
 }
 
 .tiptap-editor-surface {
   min-height: 460px;
-  border-radius: 18px;
+  border-radius: 10px;
   border: 1px solid var(--editor-border);
   background: var(--editor-surface);
-  padding: 1.55rem 1.7rem;
-  font-size: 18px;
-  line-height: 1.9;
+  padding: 1.8rem 1.95rem;
+  font-size: 20px;
+  line-height: 1.95;
   color: var(--foreground);
   outline: none;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 10px 28px rgba(27, 40, 61, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62), 0 10px 24px rgba(74, 60, 42, 0.05);
+}
+
+.tiptap-editor-surface .ProseMirror {
+  outline: none;
+}
+
+.tiptap-editor-surface .ProseMirror p.is-editor-empty:first-of-type::before {
+  color: var(--editor-placeholder);
 }
 
 .tiptap-editor-shell {
-  border-radius: 18px;
+  border-radius: 10px;
   border: 1px solid var(--editor-border);
   background: var(--editor-surface);
-  padding: 1.55rem 1.7rem;
+  padding: 1.8rem 1.95rem;
 }
 
 .ProseMirror p:last-child {
@@ -39,11 +51,12 @@
 }
 
 .ProseMirror:focus {
-  border-color: #355d96;
-  box-shadow: 0 0 0 1px rgba(53, 93, 150, 0.18);
+  border-color: var(--editor-focus-ring);
+  box-shadow: 0 0 0 3px var(--editor-focus-ring);
 }
 
 @media (max-width: 899px) {
+
   .tiptap-editor-surface,
   .tiptap-editor-shell {
     padding: 1.2rem 1.1rem;

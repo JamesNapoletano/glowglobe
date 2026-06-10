@@ -1,7 +1,12 @@
 "use client";
 
-import type { EntityFormField, EntityWorkspaceMetric } from "@/components/entity-workspace";
-import { EntityWorkspace } from "@/components/entity-workspace";
+import {
+  EntityWorkspace,
+  EntityWorkspaceSection,
+  type EntityFormField,
+  type EntityWorkspaceMetric,
+  type EntityWorkspaceSectionProps,
+} from "@/components/entity-workspace";
 
 type PlanningEntityWorkspaceProps<T extends Record<string, string | number | undefined>> = {
   title: string;
@@ -20,8 +25,16 @@ type PlanningEntityWorkspaceProps<T extends Record<string, string | number | und
   onSave: (values: T) => Promise<void>;
 };
 
+export type PlanningEntityWorkspaceSectionProps<T extends Record<string, string | number | undefined>> = EntityWorkspaceSectionProps<T>;
+
 export function PlanningEntityWorkspace<T extends Record<string, string | number | undefined>>(
   props: PlanningEntityWorkspaceProps<T>,
 ) {
   return <EntityWorkspace {...props} />;
+}
+
+export function PlanningEntityWorkspaceSection<T extends Record<string, string | number | undefined>>(
+  props: PlanningEntityWorkspaceSectionProps<T>,
+) {
+  return <EntityWorkspaceSection {...props} />;
 }

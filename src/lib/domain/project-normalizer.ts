@@ -12,6 +12,7 @@ import type {
   PlotThread,
   PovMarker,
   Project,
+  ProjectLifecycleState,
   ProjectStatus,
   Region,
   Relationship,
@@ -19,6 +20,8 @@ import type {
   RevisionSnapshot,
   RichTextDocument,
   Scene,
+  Socium,
+  Species,
   StoryDocument,
   Subplot,
   TechnologyEntry,
@@ -33,14 +36,17 @@ export function normalizeProject(project: Project): Project {
     genre: project.genre ?? "Unspecified",
     description: project.description ?? "",
     status: normalizeStatus(project.status),
+    lifecycleState: normalizeLifecycleState(project.lifecycleState),
     books: ensureArray(project.books).map(normalizeBook),
     documents: ensureArray(project.documents).map(normalizeDocument),
     characters: ensureArray(project.characters).map(normalizeCharacter),
     relationships: ensureArray(project.relationships).map(normalizeRelationship),
+    sociums: ensureArray(project.sociums).map(normalizeSocium),
     technologyEntries: ensureArray(project.technologyEntries).map(normalizeTechnologyEntry),
     locations: ensureArray(project.locations).map(normalizeLocation),
     regions: ensureArray(project.regions).map(normalizeRegion),
     planets: ensureArray(project.planets).map(normalizePlanet),
+    species: ensureArray(project.species).map(normalizeSpecies),
     timelineEvents: ensureArray(project.timelineEvents).map(normalizeTimelineEvent),
     corkboardCards: ensureArray(project.corkboardCards).map(normalizeCorkboardCard),
     plotThreads: ensureArray(project.plotThreads).map(normalizePlotThread),
@@ -84,6 +90,7 @@ function normalizeScene(scene: Scene): Scene {
     excerpt: excerpt.length > 0 ? excerpt : ["This scene is ready for drafting."],
     editorDocument,
     characterIds: ensureArray(scene.characterIds),
+    sociumIds: ensureArray(scene.sociumIds),
     locationIds: ensureArray(scene.locationIds),
     technologyEntryIds: ensureArray(scene.technologyEntryIds),
     timelineEventIds: ensureArray(scene.timelineEventIds),
@@ -106,7 +113,36 @@ function normalizeCharacter(character: Character): Character {
     ...character,
     name: character.name ?? "Untitled character",
     role: character.role ?? "",
+    summary: character.summary ?? "",
     arc: character.arc ?? "",
+    status: normalizeCharacterStatus(character.status),
+    aliases: character.aliases ?? "",
+    pronouns: character.pronouns ?? "",
+    age: character.age ?? "",
+    birthDate: character.birthDate ?? "",
+    gender: character.gender ?? "",
+    speciesId: character.speciesId ?? undefined,
+    occupation: character.occupation ?? "",
+    sociumId: character.sociumId ?? undefined,
+    residence: character.residence ?? "",
+    origin: character.origin ?? "",
+    firstAppearance: character.firstAppearance ?? "",
+    appearance: character.appearance ?? "",
+    distinguishingFeatures: character.distinguishingFeatures ?? "",
+    skills: character.skills ?? "",
+    goals: character.goals ?? "",
+    fears: character.fears ?? "",
+    internalConflict: character.internalConflict ?? "",
+    externalConflict: character.externalConflict ?? "",
+    background: character.background ?? "",
+    personality: character.personality ?? "",
+    voice: character.voice ?? "",
+    mannerisms: character.mannerisms ?? "",
+    beliefs: character.beliefs ?? "",
+    secrets: character.secrets ?? "",
+    unresolvedThreads: character.unresolvedThreads ?? "",
+    notes: character.notes ?? "",
+    quote: character.quote ?? "",
     relationshipIds: ensureArray(character.relationshipIds),
   };
 }
@@ -116,7 +152,30 @@ function normalizeRelationship(relationship: Relationship): Relationship {
     ...relationship,
     sourceCharacterId: relationship.sourceCharacterId ?? "",
     targetCharacterId: relationship.targetCharacterId ?? "",
-    description: relationship.description ?? "",
+    type: normalizeRelationshipType(relationship.type),
+    notes: relationship.notes ?? (relationship as Relationship & { description?: string }).description ?? "",
+  };
+}
+
+function normalizeSocium(socium: Socium): Socium {
+  return {
+    ...socium,
+    name: socium.name ?? "Untitled socium",
+    type: normalizeSociumType(socium.type),
+    summary: socium.summary ?? "",
+    leadership: socium.leadership ?? "",
+    headquarters: socium.headquarters ?? "",
+    territory: socium.territory ?? "",
+    scope: socium.scope ?? "",
+    goals: socium.goals ?? "",
+    beliefs: socium.beliefs ?? "",
+    resources: socium.resources ?? "",
+    methods: socium.methods ?? "",
+    allies: socium.allies ?? "",
+    rivals: socium.rivals ?? "",
+    publicReputation: socium.publicReputation ?? "",
+    internalConflicts: socium.internalConflicts ?? "",
+    notes: socium.notes ?? "",
   };
 }
 
@@ -151,6 +210,18 @@ function normalizePlanet(planet: Planet): Planet {
     ...planet,
     name: planet.name ?? "Untitled planet",
     summary: planet.summary ?? "",
+  };
+}
+
+function normalizeSpecies(species: Species): Species {
+  return {
+    ...species,
+    name: species.name ?? "Untitled species",
+    summary: species.summary ?? "",
+    traits: species.traits ?? "",
+    lifespan: species.lifespan ?? "",
+    cultureNotes: species.cultureNotes ?? "",
+    originWorld: species.originWorld ?? "",
   };
 }
 
@@ -269,6 +340,60 @@ function normalizeStatus(status?: ProjectStatus): ProjectStatus {
     : "planning";
 }
 
+function normalizeLifecycleState(state?: ProjectLifecycleState): ProjectLifecycleState {
+  return state && ["active", "archived", "trashed"].includes(state)
+    ? state
+    : "active";
+}
+
 function ensureArray<T>(value: T[] | undefined | null): T[] {
   return Array.isArray(value) ? value : [];
+}
+
+function normalizeSociumType(value?: Socium["type"]): Socium["type"] {
+  switch (value) {
+    case "faction":
+    case "clan":
+    case "guild":
+    case "kingdom":
+    case "corporation":
+    case "religion":
+    case "tribe":
+    case "order":
+    case "house":
+    case "other":
+      return value;
+    default:
+      return "faction";
+  }
+}
+
+function normalizeCharacterStatus(value?: Character["status"]): Character["status"] {
+  switch (value) {
+    case "alive":
+    case "dead":
+    case "missing":
+    case "unknown":
+      return value;
+    default:
+      return "alive";
+  }
+}
+
+function normalizeRelationshipType(value?: Relationship["type"]): Relationship["type"] {
+  switch (value) {
+    case "family":
+    case "friend":
+    case "ally":
+    case "rival":
+    case "enemy":
+    case "mentor":
+    case "student":
+    case "romantic":
+    case "subordinate":
+    case "leader":
+      return value;
+    default:
+      return "ally";
+  }
 }

@@ -1,6 +1,19 @@
 export type EntityId = string;
 
 export type ProjectStatus = "idea" | "planning" | "drafting" | "revising" | "complete";
+export type ProjectLifecycleState = "active" | "archived" | "trashed";
+export type CharacterStatus = "alive" | "dead" | "missing" | "unknown";
+export type RelationshipType =
+  | "family"
+  | "friend"
+  | "ally"
+  | "rival"
+  | "enemy"
+  | "mentor"
+  | "student"
+  | "romantic"
+  | "subordinate"
+  | "leader";
 
 export type RichTextNode = {
   type: string;
@@ -27,6 +40,7 @@ export interface Scene extends BaseEntity {
   excerpt: string[];
   editorDocument: RichTextDocument;
   characterIds: EntityId[];
+  sociumIds: EntityId[];
   locationIds: EntityId[];
   technologyEntryIds: EntityId[];
   timelineEventIds: EntityId[];
@@ -55,14 +69,44 @@ export interface StoryDocument extends BaseEntity {
 export interface Character extends BaseEntity {
   name: string;
   role: string;
+  summary: string;
   arc: string;
+  status: CharacterStatus;
+  aliases: string;
+  pronouns: string;
+  age: string;
+  birthDate: string;
+  gender: string;
+  speciesId?: EntityId;
+  occupation: string;
+  sociumId?: EntityId;
+  residence: string;
+  origin: string;
+  firstAppearance: string;
+  appearance: string;
+  distinguishingFeatures: string;
+  skills: string;
+  goals: string;
+  fears: string;
+  internalConflict: string;
+  externalConflict: string;
+  background: string;
+  personality: string;
+  voice: string;
+  mannerisms: string;
+  beliefs: string;
+  secrets: string;
+  unresolvedThreads: string;
+  notes: string;
+  quote: string;
   relationshipIds: EntityId[];
 }
 
 export interface Relationship extends BaseEntity {
   sourceCharacterId: EntityId;
   targetCharacterId: EntityId;
-  description: string;
+  type: RelationshipType;
+  notes: string;
 }
 
 export interface TechnologyEntry extends BaseEntity {
@@ -85,6 +129,15 @@ export interface Region extends BaseEntity {
 export interface Planet extends BaseEntity {
   name: string;
   summary: string;
+}
+
+export interface Species extends BaseEntity {
+  name: string;
+  summary: string;
+  traits: string;
+  lifespan: string;
+  cultureNotes: string;
+  originWorld: string;
 }
 
 export interface TimelineEvent extends BaseEntity {
@@ -146,6 +199,37 @@ export interface ResearchNote extends BaseEntity {
   source?: string;
 }
 
+export type SociumType =
+  | "faction"
+  | "clan"
+  | "guild"
+  | "kingdom"
+  | "corporation"
+  | "religion"
+  | "tribe"
+  | "order"
+  | "house"
+  | "other";
+
+export interface Socium extends BaseEntity {
+  name: string;
+  type: SociumType;
+  summary: string;
+  leadership: string;
+  headquarters: string;
+  territory: string;
+  scope: string;
+  goals: string;
+  beliefs: string;
+  resources: string;
+  methods: string;
+  allies: string;
+  rivals: string;
+  publicReputation: string;
+  internalConflicts: string;
+  notes: string;
+}
+
 export interface RevisionSnapshot extends BaseEntity {
   label: string;
   summary: string;
@@ -156,14 +240,17 @@ export interface Project extends BaseEntity {
   genre: string;
   description: string;
   status: ProjectStatus;
+  lifecycleState: ProjectLifecycleState;
   books: Book[];
   documents: StoryDocument[];
   characters: Character[];
   relationships: Relationship[];
+  sociums: Socium[];
   technologyEntries: TechnologyEntry[];
   locations: Location[];
   regions: Region[];
   planets: Planet[];
+  species: Species[];
   timelineEvents: TimelineEvent[];
   corkboardCards: CorkboardCard[];
   plotThreads: PlotThread[];

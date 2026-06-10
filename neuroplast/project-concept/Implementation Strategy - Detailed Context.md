@@ -41,7 +41,7 @@ The initial application should load into a project-aware workspace shell, allow 
 - The current implementation now applies project-aggregate mutations optimistically and persists them through a short debounced IndexedDB background-save path so the local-first UI remains more responsive.
 
 ## Relationship to Other Areas
-This area operationalizes `Projects Workspace`, `Writing Studio`, `Characters`, `Technology`, `Environment and Planet`, `Corkboard and Timeline`, `Plot and Structure`, and `Lore and Glossary` by defining how they will first be implemented.
+This area operationalizes `Projects Workspace`, `Writing Studio`, `Characters`, `Sociums`, `Technology`, `Environment and Planet`, `Corkboard and Timeline`, `Plot and Structure`, and `Lore and Glossary` by defining how they will first be implemented.
 
 ## Open Questions
 - Whether offline export is required in the earliest build slice

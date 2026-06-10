@@ -7,7 +7,12 @@ export const workspaceSurfaceOptions = [
   {
     id: "characters",
     label: "Characters",
-    description: "Browse protagonists, relationships, and arc notes.",
+    description: "Build wiki-style profiles, dossier notes, and typed relationships.",
+  },
+  {
+    id: "sociums",
+    label: "Sociums",
+    description: "Track factions, clans, guilds, kingdoms, and rival groups.",
   },
   {
     id: "world",
@@ -42,6 +47,18 @@ export const workspaceSurfaceOptions = [
 ] as const;
 
 export type WorkspaceSurface = (typeof workspaceSurfaceOptions)[number]["id"];
+
+export const nonWritingWorkspaceSurfaceOptions = workspaceSurfaceOptions.filter((surface) => surface.id !== "writing");
+
+export type NonWritingWorkspaceSurface = Exclude<WorkspaceSurface, "writing">;
+
+export function isWorkspaceSurface(value: string): value is WorkspaceSurface {
+  return workspaceSurfaceOptions.some((item) => item.id === value);
+}
+
+export function isNonWritingWorkspaceSurface(value: string): value is NonWritingWorkspaceSurface {
+  return nonWritingWorkspaceSurfaceOptions.some((item) => item.id === value);
+}
 
 export function getWorkspaceSurfaceLabel(surface: WorkspaceSurface): string {
   return workspaceSurfaceOptions.find((item) => item.id === surface)?.label ?? "Workspace";

@@ -49,15 +49,15 @@ export function SceneMetadataForm({ scene, onSave }: SceneMetadataFormProps) {
         <Typography variant="overline" color="text.secondary">
           Scene details
         </Typography>
-        <Typography variant="h3">Edit active scene</Typography>
-        <Typography color="text.secondary">
+        <Typography variant="h3" sx={{ overflowWrap: "anywhere" }}>Edit active scene</Typography>
+        <Typography color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
           Keep the title and summary aligned with the current draft without leaving the writing flow.
         </Typography>
       </Stack>
 
       <Stack component="form" onSubmit={handleSubmit(onSave)} spacing={2.25}>
-        <TextField label="Scene title" {...register("title", { required: true })} />
-        <TextField label="Scene summary" minRows={5} multiline {...register("summary", { required: true })} />
+        <TextField fullWidth label="Scene title" {...register("title", { required: true })} />
+        <TextField fullWidth label="Scene summary" minRows={5} multiline {...register("summary", { required: true })} />
         <Button disabled={isSubmitting} sx={{ alignSelf: "flex-start" }} type="submit" variant="contained">
           {isSubmitting ? "Saving..." : "Save scene details"}
         </Button>

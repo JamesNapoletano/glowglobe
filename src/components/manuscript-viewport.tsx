@@ -1,18 +1,19 @@
 "use client";
 
 import AddRounded from "@mui/icons-material/AddRounded";
+import DeleteOutlineRounded from "@mui/icons-material/DeleteOutlineRounded";
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   Chip,
+  IconButton,
   Grid,
   List,
   ListItemButton,
   Stack,
   Typography,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import {
   contrastGuardClassNames,
   getSoftSelectedListItemSx,
@@ -20,26 +21,33 @@ import {
 } from "@/components/selected-state-guardrails";
 import { SceneBodyEditor } from "@/components/scene-body-editor";
 import type { Project, RichTextDocument } from "@/lib/domain/types";
+import { brandTokens } from "@/theme/brand-tokens";
 
 type ManuscriptViewportProps = {
   project: Project;
+  activeBookTitle?: string | null;
   activeChapterId: string | null;
   activeSceneId: string | null;
   onSelectChapter: (chapterId: string) => void;
   onSelectScene: (chapterId: string, sceneId: string) => void;
   onCreateChapter: () => Promise<void>;
   onCreateScene: (chapterId: string) => Promise<void>;
+  onDeleteChapter: (chapterId: string) => Promise<void>;
+  onDeleteScene: (chapterId: string, sceneId: string) => Promise<void>;
   onUpdateSceneDocument: (chapterId: string, sceneId: string, document: RichTextDocument) => Promise<void>;
 };
 
 export function ManuscriptViewport({
   project,
+  activeBookTitle,
   activeChapterId,
   activeSceneId,
   onSelectChapter,
   onSelectScene,
   onCreateChapter,
   onCreateScene,
+  onDeleteChapter,
+  onDeleteScene,
   onUpdateSceneDocument,
 }: ManuscriptViewportProps) {
   const activeBook = project.books[0];
@@ -50,65 +58,40 @@ export function ManuscriptViewport({
   const sceneCount = chapters.reduce((count, chapter) => count + chapter.scenes.length, 0);
 
   return (
-    <Stack spacing={2} sx={{ height: "100%" }}>
-      <Card
-        sx={{
-          bgcolor: "rgba(255,255,255,0.98)",
-          overflow: "hidden",
-          position: "relative",
-          boxShadow: "0 18px 38px rgba(20,32,51,0.06)",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(135deg, rgba(49,90,146,0.10), transparent 36%)",
-            pointerEvents: "none",
-          },
-        }}
-      >
-        <CardContent sx={{ p: { xs: 2.1, xl: 2.4 } }}>
-          <Box sx={{ display: "flex", flexDirection: { xs: "column", xl: "row" }, gap: { xs: 2, xl: 2.5 }, justifyContent: "space-between" }}>
-            <Box sx={{ maxWidth: 920, minWidth: 0, flex: 1 }}>
+    <Stack spacing={1.5} sx={{ height: "100%", minHeight: 0, overflow: "hidden" }}>
+      <Box sx={{ pb: 1.35, borderBottom: "1px solid", borderColor: "divider" }}>
+        <Typography variant="overline" color="text.secondary">
+          Writing Studio
+        </Typography>
+        <Typography variant="h2" sx={{ mt: 0.55, overflowWrap: "anywhere" }}>
+          {project.title}
+        </Typography>
+        <Typography color="text.secondary" sx={{ mt: 0.35, fontSize: 15, overflowWrap: "anywhere" }}>
+          Surface: {activeBookTitle ?? activeBook?.title ?? "Writing Studio"}
+        </Typography>
+        <Typography color="text.secondary" sx={{ mt: 0.9, maxWidth: 880, lineHeight: 1.72, fontSize: 15, overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}>
+          {project.description ?? "Select or create a scene to begin drafting in the manuscript workspace."}
+        </Typography>
+      </Box>
+
+      <Grid container spacing={1.5} sx={{ flex: 1, minHeight: 0 }}>
+        <Grid size={{ xs: 12, xl: 4 }} sx={{ minHeight: 0, display: "flex" }}>
+          <Box sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: 1.2 }}>
+            <Box sx={{ border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panel, 0.82), p: 1.35 }}>
               <Typography variant="overline" color="text.secondary">
-                Writing Studio
+                Writing studio
               </Typography>
-              <Typography variant="h2" sx={{ mt: 0.75, overflowWrap: "anywhere" }}>
-                {activeScene?.title ?? "Untitled scene"}
-              </Typography>
-              <Typography color="text.secondary" sx={{ mt: 1, lineHeight: 1.72, fontSize: 15, overflowWrap: "anywhere" }}>
-                {activeScene?.summary ?? "Select or create a scene to begin drafting in the manuscript workspace."}
-              </Typography>
+              <Stack spacing={0.85} sx={{ mt: 1.1 }}>
+                <MetricCard label="Book" value={activeBookTitle ?? activeBook?.title ?? "—"} />
+                <MetricCard label="Active chapter" value={activeChapter?.title ?? "—"} />
+                <Box sx={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 0.85 }}>
+                  <MetricCard label="Chapters" value={String(chapters.length)} />
+                  <MetricCard label="Scenes" value={String(sceneCount)} />
+                </Box>
+              </Stack>
             </Box>
 
-            <Grid container spacing={1} sx={{ minWidth: 0, width: "100%", maxWidth: 500 }}>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <MetricCard label="Book" value={activeBook?.title ?? "—"} />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <MetricCard label="Active chapter" value={activeChapter?.title ?? "—"} />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <MetricCard label="Chapters" value={String(chapters.length)} />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <MetricCard label="Scenes" value={String(sceneCount)} />
-              </Grid>
-            </Grid>
-          </Box>
-        </CardContent>
-      </Card>
-
-      <Grid container spacing={2} sx={{ flex: 1 }}>
-        <Grid size={{ xs: 12, xl: 3 }}>
-          <Card
-            sx={{
-              height: "100%",
-              bgcolor: "rgba(249,252,255,0.96)",
-              boxShadow: "0 16px 34px rgba(20,32,51,0.05)",
-              border: "1px solid rgba(79, 98, 126, 0.12)",
-            }}
-          >
-            <CardContent sx={{ p: 1.55, height: "100%" }}>
+            <Box sx={{ flex: 1, minHeight: 0, border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panelMuted, 0.78), p: 1.35, display: "flex", flexDirection: "column" }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1.25, alignItems: { xs: "flex-start", sm: "center" }, flexDirection: { xs: "column", sm: "row" } }}>
                 <Box sx={{ minWidth: 0 }}>
                   <Typography variant="overline" color="text.secondary">
@@ -122,7 +105,7 @@ export function ManuscriptViewport({
                   onClick={() => void onCreateChapter()}
                   size="small"
                   startIcon={<AddRounded />}
-                  sx={{ bgcolor: "rgba(255,255,255,0.82)", borderColor: "rgba(79, 98, 126, 0.18)" }}
+                  sx={{ bgcolor: "background.paper", borderColor: "divider" }}
                   variant="outlined"
                 >
                   Chapter
@@ -133,17 +116,15 @@ export function ManuscriptViewport({
                 sx={{
                   mt: 1.5,
                   minHeight: 0,
-                  height: "calc(100% - 56px)",
+                  flex: 1,
                   overflowY: "auto",
                   pr: 0.35,
                 }}
               >
-                <Typography variant="overline" color="text.secondary">
-                  Chapters and scenes
-                </Typography>
                 <List disablePadding sx={{ mt: 0.85, display: "grid", gap: 0.8 }}>
                   {chapters.map((chapter) => {
                     const isActiveChapter = chapter.id === activeChapter?.id;
+                    const canDeleteChapter = chapters.length > 1;
 
                     return (
                       <Box
@@ -152,56 +133,75 @@ export function ManuscriptViewport({
                           minWidth: 0,
                           borderRadius: 2,
                           p: 0.55,
-                          bgcolor: isActiveChapter ? "rgba(49,90,146,0.08)" : "rgba(255,255,255,0.42)",
-                          border: isActiveChapter ? "1px solid rgba(49,90,146,0.18)" : "1px solid rgba(79, 98, 126, 0.08)",
+                          bgcolor: isActiveChapter ? alpha(brandTokens.palette.primary.main, 0.1) : alpha(brandTokens.palette.background.manuscript, 0.62),
+                          border: isActiveChapter ? `1px solid ${alpha(brandTokens.palette.primary.main, 0.28)}` : `1px solid ${alpha(brandTokens.palette.secondary.dark, 0.12)}`,
                         }}
                       >
-                        <ListItemButton
-                          onClick={() => onSelectChapter(chapter.id)}
-                          selected={isActiveChapter}
-                          sx={(theme) => ({
-                            ...getSoftSelectedListItemSx(theme, isActiveChapter),
-                            px: 1.05,
-                            py: 0.9,
-                            alignItems: "flex-start",
-                            borderRadius: 1.5,
-                            position: "relative",
-                            bgcolor: isActiveChapter ? undefined : "rgba(255,255,255,0.86)",
-                            "&::before": isActiveChapter
-                              ? {
-                                  content: '""',
-                                  position: "absolute",
-                                  left: 0,
-                                  top: 8,
-                                  bottom: 8,
-                                  width: 3,
-                                  borderRadius: 999,
-                                  backgroundColor: "primary.main",
-                                }
-                              : undefined,
-                          })}
-                        >
-                          <Box sx={{ minWidth: 0, width: "100%", pl: isActiveChapter ? 0.45 : 0 }}>
-                            <Typography
-                              className={contrastGuardClassNames.primary}
-                              sx={{
-                                fontWeight: 700,
-                                fontSize: 13.5,
-                                lineHeight: 1.35,
-                                wordBreak: "break-word",
-                                display: "-webkit-box",
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: "vertical",
-                                overflow: "hidden",
+                        <Box sx={{ display: "flex", alignItems: "stretch", gap: 0.35 }}>
+                          <ListItemButton
+                            onClick={() => onSelectChapter(chapter.id)}
+                            selected={isActiveChapter}
+                            sx={(theme) => ({
+                              ...getSoftSelectedListItemSx(theme, isActiveChapter),
+                              px: 1.05,
+                              py: 0.9,
+                              alignItems: "flex-start",
+                              borderRadius: 2,
+                              position: "relative",
+                              bgcolor: isActiveChapter ? undefined : alpha(brandTokens.palette.background.manuscript, 0.9),
+                              flex: 1,
+                              minWidth: 0,
+                              "&::before": isActiveChapter
+                                ? {
+                                    content: '""',
+                                    position: "absolute",
+                                    left: 0,
+                                    top: 8,
+                                    bottom: 8,
+                                    width: 3,
+                                    borderRadius: 999,
+                                    backgroundColor: "primary.main",
+                                  }
+                                : undefined,
+                            })}
+                          >
+                            <Box sx={{ minWidth: 0, width: "100%", pl: isActiveChapter ? 0.45 : 0 }}>
+                              <Typography
+                                className={contrastGuardClassNames.primary}
+                                sx={{
+                                  fontWeight: 700,
+                                  fontSize: 13.5,
+                                  lineHeight: 1.35,
+                                  wordBreak: "break-word",
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                }}
+                              >
+                                {chapter.title}
+                              </Typography>
+                              <Typography className={contrastGuardClassNames.secondary} sx={{ mt: 0.25, fontSize: 12, fontWeight: isActiveChapter ? 600 : 500 }}>
+                                {chapter.scenes.length} scenes
+                              </Typography>
+                            </Box>
+                          </ListItemButton>
+
+                          {canDeleteChapter ? (
+                            <IconButton
+                              aria-label={`Delete ${chapter.title}`}
+                              color="error"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                void onDeleteChapter(chapter.id);
                               }}
+                              size="small"
+                              sx={{ alignSelf: "center" }}
                             >
-                              {chapter.title}
-                            </Typography>
-                            <Typography className={contrastGuardClassNames.secondary} sx={{ mt: 0.25, fontSize: 12, fontWeight: isActiveChapter ? 600 : 500 }}>
-                              {chapter.scenes.length} scenes
-                            </Typography>
-                          </Box>
-                        </ListItemButton>
+                              <DeleteOutlineRounded fontSize="small" />
+                            </IconButton>
+                          ) : null}
+                        </Box>
 
                         {isActiveChapter ? (
                           <Stack spacing={0.7} sx={{ mt: 0.7, px: 0.35, pb: 0.2 }}>
@@ -212,7 +212,7 @@ export function ManuscriptViewport({
                               <Button
                                 onClick={() => void onCreateScene(chapter.id)}
                                 size="small"
-                                sx={{ minWidth: 0, px: 1, bgcolor: "rgba(49,90,146,0.08)" }}
+                                 sx={{ minWidth: 0, px: 1, bgcolor: alpha(brandTokens.palette.primary.main, 0.12) }}
                                 variant="text"
                               >
                                 + Add scene
@@ -223,37 +223,64 @@ export function ManuscriptViewport({
                               <List disablePadding sx={{ display: "grid", gap: 0.45 }}>
                                 {chapter.scenes.map((scene) => {
                                   const isActiveScene = scene.id === activeScene?.id;
+                                  const canDeleteScene = chapter.scenes.length > 1;
 
                                   return (
-                                    <ListItemButton
+                                    <Box
                                       key={scene.id}
-                                      onClick={() => onSelectScene(chapter.id, scene.id)}
-                                      selected={isActiveScene}
                                       sx={(theme) => ({
                                         ...getStrongSelectedListItemSx(theme, isActiveScene),
-                                        px: 1,
-                                        py: 0.8,
                                         ml: 0.2,
-                                        borderRadius: 1.4,
-                                        bgcolor: isActiveScene ? undefined : "rgba(255,255,255,0.9)",
+                                        borderRadius: 999,
+                                         bgcolor: isActiveScene ? undefined : alpha(brandTokens.palette.background.manuscript, 0.92),
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 0.35,
                                       })}
                                     >
-                                      <Typography
-                                        className={contrastGuardClassNames.primary}
+                                      <ListItemButton
+                                        onClick={() => onSelectScene(chapter.id, scene.id)}
+                                        selected={isActiveScene}
                                         sx={{
-                                          fontSize: 13.25,
-                                          lineHeight: 1.34,
-                                          fontWeight: isActiveScene ? 700 : 500,
-                                          wordBreak: "break-word",
-                                          display: "-webkit-box",
-                                          WebkitLineClamp: 2,
-                                          WebkitBoxOrient: "vertical",
-                                          overflow: "hidden",
+                                          px: 1,
+                                          py: 0.8,
+                                          borderRadius: 999,
+                                          minWidth: 0,
+                                          flex: 1,
                                         }}
                                       >
-                                        {scene.title}
-                                      </Typography>
-                                    </ListItemButton>
+                                        <Typography
+                                          className={contrastGuardClassNames.primary}
+                                          sx={{
+                                            fontSize: 13.25,
+                                            lineHeight: 1.34,
+                                            fontWeight: isActiveScene ? 700 : 500,
+                                            wordBreak: "break-word",
+                                            display: "-webkit-box",
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: "vertical",
+                                            overflow: "hidden",
+                                          }}
+                                        >
+                                          {scene.title}
+                                        </Typography>
+                                      </ListItemButton>
+
+                                      {canDeleteScene ? (
+                                        <IconButton
+                                          aria-label={`Delete ${scene.title}`}
+                                          color="error"
+                                          onClick={(event) => {
+                                            event.stopPropagation();
+                                            void onDeleteScene(chapter.id, scene.id);
+                                          }}
+                                          size="small"
+                                          sx={{ mr: 0.35 }}
+                                        >
+                                          <DeleteOutlineRounded fontSize="small" />
+                                        </IconButton>
+                                      ) : null}
+                                    </Box>
                                   );
                                 })}
                               </List>
@@ -275,66 +302,74 @@ export function ManuscriptViewport({
                   </Typography>
                 ) : null}
               </Box>
-            </CardContent>
-          </Card>
+            </Box>
+          </Box>
         </Grid>
 
-        <Grid size={{ xs: 12, xl: 9 }}>
-          <Card sx={{ height: "100%", bgcolor: "rgba(255,255,255,0.95)", boxShadow: "0 18px 38px rgba(20,32,51,0.05)" }}>
-            <CardContent sx={{ p: { xs: 2, xl: 2.2 } }}>
-              <Stack spacing={2}>
+        <Grid size={{ xs: 12, xl: 8 }} sx={{ minHeight: 0, height: "100%", display: "flex" }}>
+          <Box sx={{ flex: 1, minHeight: 0, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", pr: 0.2, display: "flex", flexDirection: "column", gap: 1.25 }}>
+              <Box sx={{ border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.paper, 0.92), p: 1.5 }}>
                 <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, justifyContent: "space-between", gap: 1.5, alignItems: { xs: "flex-start", lg: "center" } }}>
-                  <Box>
+                  <Box sx={{ minWidth: 0 }}>
                     <Typography variant="overline" color="text.secondary">
                       Draft
                     </Typography>
-                    <Typography variant="h2" sx={{ mt: 0.55 }}>
-                      Focused writing canvas
+                    <Typography variant="h2" sx={{ mt: 0.45, overflowWrap: "anywhere" }}>
+                      {activeScene?.title ?? "Untitled scene"}
+                    </Typography>
+                    <Typography color="text.secondary" sx={{ mt: 0.75, lineHeight: 1.7, fontSize: 14.5, overflowWrap: "anywhere" }}>
+                      {activeScene?.summary ?? "Select or create a scene to begin drafting in the manuscript workspace."}
                     </Typography>
                   </Box>
-                  <Chip label="Autosave on blur" size="small" sx={{ bgcolor: "rgba(248,251,255,0.92)" }} variant="outlined" />
+                  <Chip
+                    label="Autosave on blur"
+                    size="small"
+                    sx={{ bgcolor: alpha(brandTokens.palette.background.panel, 0.92), maxWidth: "100%", ".MuiChip-label": { overflowWrap: "anywhere" } }}
+                    variant="outlined"
+                  />
                 </Box>
+              </Box>
 
+              <Box sx={{ border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.manuscript, 0.88), p: { xs: 1.2, xl: 1.35 }, flexShrink: 0 }}>
                 <SceneBodyEditor
                   onSave={(document) =>
                     activeChapter && activeScene ? onUpdateSceneDocument(activeChapter.id, activeScene.id, document) : Promise.resolve()
                   }
                   scene={activeScene ?? undefined}
                 />
+              </Box>
 
-                <Grid container spacing={1.5}>
-                  <Grid size={{ xs: 12, xl: 8 }}>
-                    <Card sx={{ bgcolor: "rgba(248,251,255,0.90)", border: "1px solid rgba(79, 98, 126, 0.10)" }}>
-                      <CardContent sx={{ p: 1.8 }}>
-                        <Typography variant="overline" color="text.secondary">
-                          Scene note
-                        </Typography>
-                        <Typography color="text.secondary" sx={{ mt: 0.9, lineHeight: 1.7, fontSize: 14 }}>
-                          {((activeScene?.excerpt ?? []).length
-                            ? activeScene?.excerpt?.[0]
-                            : "This scene is ready for local-first drafting. Shape the prose in the center and use the inspector when continuity details matter.") ?? ""}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid size={{ xs: 12, xl: 4 }}>
-                    <Card sx={{ bgcolor: "rgba(248,251,255,0.90)", border: "1px solid rgba(79, 98, 126, 0.10)" }}>
-                      <CardContent sx={{ p: 1.8 }}>
-                        <Typography variant="overline" color="text.secondary">
-                          Session cues
-                        </Typography>
-                        <Stack component="ul" spacing={0.55} sx={{ mt: 0.9, pl: 2.05, color: "text.secondary" }}>
-                          <Typography component="li" variant="body2">Stay in the draft for sentence-level work.</Typography>
-                          <Typography component="li" variant="body2">Use the left navigator to change structural position.</Typography>
-                          <Typography component="li" variant="body2">Use the inspector to manage continuity and links.</Typography>
-                        </Stack>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+              <Grid container spacing={1.25}>
+                <Grid size={{ xs: 12, xl: 8 }}>
+                  <Box sx={{ height: "100%", border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panel, 0.8), p: 1.4 }}>
+                    <Box>
+                      <Typography variant="overline" color="text.secondary">
+                        Scene note
+                      </Typography>
+                      <Typography color="text.secondary" sx={{ mt: 0.8, lineHeight: 1.7, fontSize: 14 }}>
+                        {((activeScene?.excerpt ?? []).length
+                          ? activeScene?.excerpt?.[0]
+                          : "This scene is ready for local-first drafting. Shape the prose in the center and use the inspector when continuity details matter.") ?? ""}
+                      </Typography>
+                    </Box>
+                  </Box>
                 </Grid>
-              </Stack>
-            </CardContent>
-          </Card>
+                <Grid size={{ xs: 12, xl: 4 }}>
+                  <Box sx={{ height: "100%", border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panel, 0.8), p: 1.4 }}>
+                    <Typography variant="overline" color="text.secondary">
+                      Session cues
+                    </Typography>
+                    <Stack component="ul" spacing={0.55} sx={{ mt: 0.85, pl: 2.05, color: "text.secondary", minWidth: 0 }}>
+                      <Typography component="li" variant="body2">Stay in the draft for sentence-level work.</Typography>
+                      <Typography component="li" variant="body2">Use the left navigator to change structural position.</Typography>
+                      <Typography component="li" variant="body2">Use the inspector to manage continuity and links.</Typography>
+                    </Stack>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+          </Box>
         </Grid>
       </Grid>
     </Stack>
@@ -343,15 +378,13 @@ export function ManuscriptViewport({
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <Card sx={{ bgcolor: "rgba(247,250,255,0.9)", border: "1px solid rgba(79, 98, 126, 0.10)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)" }}>
-      <CardContent sx={{ p: 1.45 }}>
+    <Box sx={{ bgcolor: alpha(brandTokens.palette.background.manuscript, 0.92), border: "1px solid", borderColor: "divider", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.72)", p: 1.15 }}>
         <Typography variant="overline" color="text.secondary">
           {label}
         </Typography>
-        <Typography variant="h3" sx={{ mt: 0.7, overflowWrap: "anywhere" }}>
+        <Typography variant="h3" sx={{ mt: 0.45, overflowWrap: "anywhere", fontSize: "1.12rem" }}>
           {value}
         </Typography>
-      </CardContent>
-    </Card>
+    </Box>
   );
 }

@@ -5,7 +5,7 @@
 Provide the worldbuilding surface for locations, planets, environments, cultures, regions, and travel logic.
 
 ## Current Reality
-Environment and planet design are requested core product features, but only concept documentation exists so far.
+Environment and planet design are requested core product features. The World workspace now supports locations, regions, planets, and reusable species records, but deeper map-style and travel-logic tooling is still deferred.
 
 ## Desired Outcome
 The author can maintain a coherent world model that supports scene setting, continuity, and believable movement through the story space.
@@ -18,6 +18,7 @@ The author can maintain a coherent world model that supports scene setting, cont
 - Location profile — place details and narrative role
 - Planet or world profile — larger setting context
 - Region/culture notes — societies, norms, ecology, climate
+- Species profile — reusable people-group reference for character selection and world continuity
 - Travel logic — distance, routes, or movement assumptions
 
 ## Constraints

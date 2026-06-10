@@ -1,69 +1,87 @@
 "use client";
 
-import { createTheme } from "@mui/material/styles";
+import { alpha, createTheme } from "@mui/material/styles";
+import { brandTokens } from "@/theme/brand-tokens";
 
 const theme = createTheme({
   cssVariables: true,
   shape: {
-    borderRadius: 14,
+    borderRadius: brandTokens.shape.cardRadius,
   },
   palette: {
     mode: "light",
-    primary: {
-      main: "#315a92",
-      light: "#5f81b0",
-      dark: "#24446f",
-      contrastText: "#ffffff",
-    },
-    secondary: {
-      main: "#5d6f88",
-    },
+    primary: brandTokens.palette.primary,
+    secondary: brandTokens.palette.secondary,
     background: {
-      default: "#eef3f8",
-      paper: "#fbfdff",
+      default: brandTokens.palette.background.default,
+      paper: brandTokens.palette.background.paper,
     },
     text: {
-      primary: "#132033",
-      secondary: "#607086",
+      primary: brandTokens.palette.text.primary,
+      secondary: brandTokens.palette.text.secondary,
     },
-    divider: "rgba(79, 98, 126, 0.16)",
-    success: {
-      main: "#2f7a61",
-    },
-    error: {
-      main: "#b14d5a",
-    },
+    divider: brandTokens.palette.divider,
+    success: brandTokens.palette.success,
+    warning: brandTokens.palette.warning,
+    error: brandTokens.palette.error,
   },
   typography: {
-    fontFamily: 'Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+    fontFamily: brandTokens.typography.uiFontFamily,
     h1: {
-      fontSize: "2.65rem",
-      fontWeight: 750,
-      letterSpacing: "-0.04em",
-      lineHeight: 1.05,
+      fontFamily: brandTokens.typography.displayFontFamily,
+      fontSize: "2.45rem",
+      fontWeight: 600,
+      letterSpacing: "-0.03em",
+      lineHeight: 1.04,
     },
     h2: {
-      fontSize: "2.1rem",
-      fontWeight: 720,
-      letterSpacing: "-0.03em",
+      fontFamily: brandTokens.typography.displayFontFamily,
+      fontSize: "1.9rem",
+      fontWeight: 600,
+      letterSpacing: "-0.025em",
       lineHeight: 1.08,
     },
     h3: {
-      fontSize: "1.18rem",
-      fontWeight: 700,
+      fontFamily: brandTokens.typography.displayFontFamily,
+      fontSize: "1.15rem",
+      fontWeight: 600,
       lineHeight: 1.2,
+      letterSpacing: "-0.015em",
+    },
+    h4: {
+      fontFamily: brandTokens.typography.uiFontFamily,
+      fontSize: "1rem",
+      fontWeight: 700,
+      lineHeight: 1.35,
     },
     body1: {
-      lineHeight: 1.7,
+      fontSize: "0.97rem",
+      lineHeight: 1.72,
     },
     body2: {
-      lineHeight: 1.65,
+      fontSize: "0.88rem",
+      lineHeight: 1.62,
+    },
+    subtitle1: {
+      fontSize: "0.95rem",
+      lineHeight: 1.6,
+      color: brandTokens.palette.text.secondary,
+    },
+    subtitle2: {
+      fontSize: "0.82rem",
+      fontWeight: 600,
+      lineHeight: 1.5,
     },
     overline: {
       fontSize: "0.7rem",
       fontWeight: 700,
-      letterSpacing: "0.22em",
+      letterSpacing: brandTokens.typography.labelTracking,
       textTransform: "uppercase",
+    },
+    button: {
+      textTransform: "none",
+      fontWeight: 600,
+      letterSpacing: 0,
     },
   },
   components: {
@@ -72,12 +90,24 @@ const theme = createTheme({
         html: {
           colorScheme: "light",
         },
+        ":root": {
+          "--font-ui": brandTokens.typography.uiFontFamily,
+          "--font-manuscript": brandTokens.typography.manuscriptFontFamily,
+          "--editor-surface": brandTokens.palette.background.manuscript,
+          "--editor-border": alpha(brandTokens.palette.secondary.dark, 0.28),
+          "--surface-alt": brandTokens.palette.background.panel,
+          "--foreground": brandTokens.palette.text.primary,
+          "--editor-selection": alpha(brandTokens.palette.primary.main, 0.18),
+          "--editor-focus-ring": alpha(brandTokens.palette.primary.dark, 0.28),
+          "--editor-placeholder": alpha(brandTokens.palette.text.secondary, 0.72),
+          "--surface-panel": brandTokens.palette.background.panel,
+          "--surface-panel-muted": brandTokens.palette.background.panelMuted,
+        },
         body: {
           margin: 0,
           minHeight: "100vh",
-          background:
-            "radial-gradient(circle at top, rgba(112, 145, 193, 0.16), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eef3f8 48%, #e7edf5 100%)",
-          color: "#132033",
+          background: `radial-gradient(circle at top, ${alpha(brandTokens.palette.primary.light, 0.14)}, transparent 22%), linear-gradient(180deg, ${brandTokens.palette.background.paper} 0%, ${brandTokens.palette.background.default} 46%, #e6dece 100%)`,
+          color: brandTokens.palette.text.primary,
         },
         a: {
           color: "inherit",
@@ -87,7 +117,7 @@ const theme = createTheme({
           font: "inherit",
         },
         "::selection": {
-          background: "rgba(53, 93, 150, 0.18)",
+          background: alpha(brandTokens.palette.primary.main, 0.18),
         },
       },
     },
@@ -95,6 +125,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: "none",
+          backgroundColor: brandTokens.palette.background.paper,
         },
       },
     },
@@ -104,9 +135,10 @@ const theme = createTheme({
       },
       styleOverrides: {
         root: {
-          borderRadius: 18,
-          border: "1px solid rgba(79, 98, 126, 0.14)",
-          boxShadow: "0 14px 34px rgba(20, 32, 51, 0.05)",
+          borderRadius: brandTokens.shape.cardRadius,
+          backgroundColor: brandTokens.palette.background.paper,
+          border: `1px solid ${brandTokens.palette.divider}`,
+          boxShadow: brandTokens.shadows.card,
         },
       },
     },
@@ -116,51 +148,115 @@ const theme = createTheme({
       },
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          textTransform: "none",
-          fontWeight: 600,
-          letterSpacing: "-0.01em",
-          paddingInline: "0.95rem",
+          borderRadius: brandTokens.shape.inputRadius,
+          paddingInline: "0.9rem",
+          minHeight: 34,
+        },
+        outlined: {
+          borderColor: alpha(brandTokens.palette.secondary.dark, 0.26),
+          backgroundColor: alpha(brandTokens.palette.background.paper, 0.9),
+          color: brandTokens.palette.text.primary,
+          "&:hover": {
+            borderColor: alpha(brandTokens.palette.primary.dark, 0.4),
+            backgroundColor: alpha(brandTokens.palette.background.manuscript, 0.95),
+          },
         },
         contained: {
-          boxShadow: "0 8px 18px rgba(49, 90, 146, 0.18)",
+          backgroundColor: brandTokens.palette.primary.main,
+          color: brandTokens.palette.primary.contrastText,
+          boxShadow: brandTokens.shadows.selected,
+          "&:hover": {
+            backgroundColor: brandTokens.palette.primary.dark,
+            boxShadow: brandTokens.shadows.selected,
+          },
+        },
+        text: {
+          "&:hover": {
+            backgroundColor: alpha(brandTokens.palette.primary.main, 0.08),
+          },
         },
       },
     },
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 999,
+          borderRadius: brandTokens.shape.pillRadius,
           fontWeight: 600,
+          backgroundColor: alpha(brandTokens.palette.background.paper, 0.88),
+          borderColor: alpha(brandTokens.palette.secondary.dark, 0.18),
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 22,
+          borderRadius: brandTokens.shape.shellRadius,
+          backgroundColor: brandTokens.palette.background.paper,
+          border: `1px solid ${brandTokens.palette.divider}`,
         },
       },
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          backgroundColor: "rgba(248, 251, 255, 0.92)",
+          borderRadius: brandTokens.shape.inputRadius,
+          backgroundColor: alpha(brandTokens.palette.background.manuscript, 0.92),
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: brandTokens.palette.primary.main,
+            boxShadow: brandTokens.shadows.focusRing,
+          },
         },
       },
     },
     MuiListItemButton: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: brandTokens.shape.cardRadius,
         },
       },
     },
     MuiDivider: {
       styleOverrides: {
         root: {
-          borderColor: "rgba(79, 98, 126, 0.12)",
+          borderColor: alpha(brandTokens.palette.secondary.dark, 0.18),
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          borderRadius: brandTokens.shape.cardRadius,
+          border: `1px solid ${brandTokens.palette.divider}`,
+          boxShadow: brandTokens.shadows.card,
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          marginInline: 4,
+          marginBlock: 2,
+          borderRadius: brandTokens.shape.inputRadius,
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: brandTokens.shape.cardRadius,
+          backgroundColor: alpha(brandTokens.palette.background.panelMuted, 0.9),
+        },
+      },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        switchBase: {
+          "&.Mui-checked": {
+            color: brandTokens.palette.primary.main,
+          },
+          "&.Mui-checked + .MuiSwitch-track": {
+            backgroundColor: brandTokens.palette.primary.main,
+          },
         },
       },
     },

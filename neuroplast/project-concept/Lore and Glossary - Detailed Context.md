@@ -8,7 +8,7 @@
 Define the canon reference layer that helps authors maintain terminology, history, and recurring concepts across manuscript and planning work.
 
 ## Important State and Dependencies
-- Core entities: `Glossary Entry`, `Lore Note`, `Faction`, `History Note`
+- Core entities: `Glossary Entry`, `Lore Note`, `History Note`
 - Depends on project ownership and cross-linking with manuscript content
 - May connect to characters, locations, technologies, and plot threads
 
@@ -34,7 +34,7 @@ The author records key terms and canon notes, links them to relevant scenes or e
 This area connects broadly across `Writing Studio`, `Characters`, `Technology`, `Environment and Planet`, and `Plot and Structure`.
 
 ## Open Questions
-- Whether factions should remain within this surface or split into a new one later
+- How lore notes and `Sociums` should divide canon authority for organized groups
 - Whether canonical status labels are needed in v1
 
 ## Link to Canonical Architecture
