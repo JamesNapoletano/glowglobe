@@ -1,1 +1,7 @@
-neuroplast/plans/2026-05-24-project-landing-and-missing-project-fallback-plan.md
+# Three-Column Scroll Isolation Plan
+#plan
+
+## Summary
+- Make the left sidebar completely static (no internal scrolling)
+- Make the center working column scroll as a single scrollable pane instead of two independently-scrolling sub-panels
+- Ensure the right inspector column scrolls independently (already works, but verify)

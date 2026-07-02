@@ -15,12 +15,12 @@ It is auto-refreshed by `neuroplast sync` when it still matches the managed base
 - **deep** — use `standard`, then add broader concept, learning, and adjacent plan context for reframing or higher-risk work.
 
 ## Current Snapshot
-- **Active plan:** `neuroplast/plans/2026-05-13-chapter-deletion-and-delete-confirmation-plan.md`
-- **Active plan source:** active conversation execution handoff
-- **Objective:** Add chapter deletion and confirmation checks for chapter/scene deletes while preserving the minimum-one-chapter and minimum-one-scene rules.
-- **Next bounded step:** Add a chapter-removal helper in `src/lib/domain/project-factory.ts` and wire confirmed delete handlers through `src/components/workspace-root.tsx` into the Writing Studio navigator.
-- **Blockers:** No blockers at plan creation time.
-- **Verification:** Multiple chapters should show chapter delete controls. | Single remaining chapter/scene cases should hide delete controls. | Chapter and scene deletes should require confirmation. | Active deletions should route to surviving content. | `npm run typecheck`, `npm run lint`, and `npm run build` should pass.
+- **Active plan:** `neuroplast/plans/styling-update.md`
+- **Active plan source:** latest_mtime
+- **Objective:** No explicit current objective recorded in the active plan.
+- **Next bounded step:** No explicit next bounded step recorded.
+- **Blockers:** None recorded.
+- **Verification:** None recorded.
 
 ## Route-Aware Reading Hints
 - **act** -> use `lean` context depth and emphasize objective, next bounded step, blockers, verification.
@@ -28,10 +28,8 @@ It is auto-refreshed by `neuroplast sync` when it still matches the managed base
 - **conceptualize** -> use `deep` context depth and emphasize objective, scope assumptions, related files, recent context.
 
 ## Relevant Files
-- `neuroplast/plans/2026-05-13-chapter-deletion-and-delete-confirmation-plan.md`
-- `src/lib/domain/project-factory.ts`
-- `src/components/workspace-root.tsx`
-- `src/components/manuscript-viewport.tsx`
+- `neuroplast/plans/styling-update.md`
+- `neuroplast/project-concept/changelog/2026-05-24.md`
 - `ARCHITECTURE.md`
 
 ## Refresh Sources

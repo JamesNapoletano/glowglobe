@@ -1,0 +1,42 @@
+{
+  "description": "Neuroplast contract-enforcement hooks — inject the startup sequence and short-prompt routing on every prompt (UserPromptSubmit), track file changes this session (PostToolUse), and mechanically gate turn completion on the changelog Update Rule (Stop).",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/neuroplast-gate.js\"",
+            "statusMessage": "Loading Neuroplast startup gate",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/neuroplast-track-changes.js\"",
+            "statusMessage": "Tracking Neuroplast artifact changes",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/neuroplast-artifact-gate.js\"",
+            "statusMessage": "Checking Neuroplast artifact gate",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -19,20 +19,34 @@ Before executing any Neuroplast workflow step in OpenCode:
 2. Read `neuroplast/manifest.yaml`
 3. Read `neuroplast/capabilities.yaml`
 4. If `neuroplast/manifest.yaml` declares active workflow extensions, read the matching files under `neuroplast/extensions/` and `neuroplast/local-extensions/`
-5. Then read and execute the relevant instruction file such as `neuroplast/reverse-engineering.md`, `neuroplast/conceptualize.md`, or `neuroplast/act.md`
+5. Then read and execute the relevant instruction file such as `neuroplast/reverse-engineering.md`, `neuroplast/reconcile-conflicts.md`, `neuroplast/conceptualize.md`, or `neuroplast/act.md`
 
 ## Workflow Entrypoint
 Start by reading `neuroplast/WORKFLOW_CONTRACT.md`, then any manifest-declared active workflow extensions, then follow the relevant instruction file for the current step. Treat the files as the active project mind.
 
-Prefer `neuroplast/act.md` for normal bounded work once project context exists. Use `neuroplast/reverse-engineering.md` when an existing codebase needs code-grounded project-mind reconstruction before conceptualization. Use `neuroplast/conceptualize.md` when the project mind needs to be created or reframed.
+Prefer `neuroplast/act.md` for normal bounded work once project context exists. Use `neuroplast/reverse-engineering.md` when an existing codebase needs code-grounded project-mind reconstruction before conceptualization. Use `neuroplast/reconcile-conflicts.md` when merge conflicts or competing edits need a preservation-first reconciliation pass. Use `neuroplast/conceptualize.md` when the project mind needs to be created or reframed.
+
+When using the bundled OpenCode agents, treat `neuroplast-planner` as strict read-only plan mode: it should return a bounded plan in chat, not implementation or repository writes. After planning, explicitly switch to `neuroplast-orchestrator` for execution and any plan persistence. The orchestrator should accept that same-session bounded planner handoff as valid execution input and persist it into `neuroplast/plans/` before broader implementation work. Complete prevention of planner writes requires host-runtime enforcement: keep the planner on a read-only tool allowlist and isolate planner sessions from prior mutable builder/executor lanes when possible.
+
+## Interaction Routing
+- Prefer explicit instruction-file requests or explicit step names when possible.
+- If the repository defines shared interaction-routing rules, use them before interpreting short prompts.
+- Shared examples:
+  - `go ahead` / `continue` -> continue with `neuroplast/act.md` when a bounded active objective already exists in files or a same-session bounded planner handoff is available; otherwise ask for clarification.
+  - `plan this` / `reframe this` -> use `neuroplast/conceptualize.md` when the work is new, ambiguous, or materially reframed.
+  - `what's next?` -> inspect the current plan and summarize the next bounded step instead of executing automatically.
+- When short-prompt meaning is still unclear after checking repository context, clarify instead of guessing.
 
 ## Recommended Prompt
-`You are operating inside a Neuroplast project mind. Read neuroplast/WORKFLOW_CONTRACT.md, neuroplast/manifest.yaml, neuroplast/capabilities.yaml, any active workflow extensions declared in the manifest, and the relevant instruction file. Load the current project state from files, do bounded work, do not overwrite files unless explicitly instructed, and record plan, changelog, and learning updates in the designated Neuroplast folders.`
+`You are operating inside a Neuroplast project mind. Read neuroplast/WORKFLOW_CONTRACT.md, neuroplast/manifest.yaml, neuroplast/capabilities.yaml, any active workflow extensions declared in the manifest, and the relevant instruction file. If the repository defines shared interaction-routing rules, use them before interpreting short prompts. Load the current project state from files, do bounded work, do not overwrite files unless explicitly instructed, and record plan, changelog, and learning updates in the designated Neuroplast folders.`
 
 ## Usage Notes
 - Use the current instruction file as the immediate task contract.
 - Use `neuroplast/capabilities.yaml` to adjust behavior if environment limits apply.
 - Keep updates inside the canonical Neuroplast folders and root `ARCHITECTURE.md`.
+- Prefer `neuroplast-orchestrator` as the default OpenCode agent for execution and file updates; use `neuroplast-planner` only to produce read-only handoff-ready plans that the orchestrator persists before execution.
+- If OpenCode allows per-agent tool policies, enforce planner mode with a read-only allowlist (`read`, `grep`, `glob`, and optional fetch-only tools) and deny all mutation-capable tools server-side.
+- If OpenCode can reuse session state across agent switches, force a fresh planner session or equivalent isolation after builder/executor use so mutation-capable tools do not leak into planner mode.
 
 ## Known Limitations
 - Tool availability may differ by runtime, so always confirm file-writing and terminal capabilities before assuming them.

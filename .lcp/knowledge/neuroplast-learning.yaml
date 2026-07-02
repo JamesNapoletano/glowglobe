@@ -1,0 +1,25 @@
+lcp_version: "2.0"
+kind: knowledge_artifact
+id: neuroplast-learning
+title: Neuroplast durable learning memory
+summary: Durable, reusable learnings captured during Neuroplast work cycles. This is the sole source of truth for memory; there is no separate rendered view.
+content_type: learning
+entries:
+  - id: ui-layout-patterns
+    status: active
+    confidence: 0.8
+    title: UI Layout Patterns
+    note: |-
+      ## Stacked reference workspaces over nested editor grids
+      - When a non-writing workspace contains multiple related editors, prefer a single surface-level title card followed by a table of contents and anchored collapsible sections.
+      - This keeps page identity stable while still letting operators jump directly to the correct editor block.
+      - Reuse one shared section scaffold across surfaces so single-editor and multi-editor workspaces feel like the same product system.
+      - Hide the table of contents when the shared surface exposes fewer than two sections so single-editor pages avoid redundant navigation chrome.
+      - Do not repeat the section title inside the expanded body card unless the body is introducing a distinct nested sub-area; otherwise the accordion header should carry the naming burden alone.
+    provenance:
+      origin: learning-migration
+      method: captured-during-work-cycle
+    updated_at: "2026-07-02T14:02:58Z"
+scope:
+  root: .
+updated_at: "2026-07-02T14:04:55Z"
