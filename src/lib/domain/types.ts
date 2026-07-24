@@ -30,6 +30,7 @@ export type RichTextDocument = {
 
 export interface BaseEntity {
   id: EntityId;
+  displayName: string;
   createdAt: string;
   updatedAt: string;
 }

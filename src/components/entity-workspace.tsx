@@ -81,12 +81,12 @@ type EntityWorkspaceProps<T extends Record<string, string | number | undefined>>
 
 export function WorkspaceSurfaceLayout({ title, eyebrow, description, metrics, sections }: WorkspaceSurfaceLayoutProps) {
   return (
-    <Stack spacing={1.5}>
-      <Card sx={{ bgcolor: "rgba(255,255,255,0.92)" }}>
-        <CardContent sx={{ p: { xs: 2, xl: 2 } }}>
-          <Box sx={{ display: "flex", flexDirection: { xs: "column", xl: "row" }, gap: 1.5, justifyContent: "space-between" }}>
+    <Stack spacing={2}>
+      <Card className="glass-panel" sx={{ bgcolor: "background.paper", borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
+        <CardContent sx={{ p: { xs: 2.2, xl: 2.8 } }}>
+          <Box sx={{ display: "flex", flexDirection: { xs: "column", xl: "row" }, gap: 2, justifyContent: "space-between" }}>
             <Box sx={{ minWidth: 0, flex: 1 }}>
-              <Typography variant="overline" color="text.secondary">
+              <Typography variant="overline" color="primary.main">
                 {eyebrow}
               </Typography>
               <Typography variant="h2" sx={{ mt: 0.75, overflowWrap: "anywhere" }}>
@@ -101,12 +101,12 @@ export function WorkspaceSurfaceLayout({ title, eyebrow, description, metrics, s
               <Grid container spacing={1.25} sx={{ width: "100%", minWidth: 0, maxWidth: { xl: 600 } }}>
                 {metrics.map((metric) => (
                   <Grid key={metric.label} size={{ xs: 12, sm: 6, xl: 4 }}>
-                    <Card sx={{ bgcolor: "rgba(248,251,255,0.88)" }}>
+                    <Card sx={{ bgcolor: "background.panel", border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
                       <CardContent sx={{ p: 1.8 }}>
                         <Typography variant="overline" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
                           {metric.label}
                         </Typography>
-                        <Typography variant="h3" sx={{ mt: 1, overflowWrap: "anywhere" }}>
+                        <Typography variant="h3" sx={{ mt: 0.8, overflowWrap: "anywhere", color: "text.primary" }}>
                           {metric.value}
                         </Typography>
                       </CardContent>
@@ -120,18 +120,19 @@ export function WorkspaceSurfaceLayout({ title, eyebrow, description, metrics, s
       </Card>
 
       {sections.length >= 2 ? (
-        <Card sx={{ bgcolor: "rgba(252,253,255,0.92)" }}>
-          <CardContent sx={{ p: { xs: 1.8, xl: 2 } }}>
+        <Card className="glass-card" sx={{ bgcolor: "background.panel", borderRadius: 2.5, border: "1px solid", borderColor: "divider" }}>
+          <CardContent sx={{ p: { xs: 1.5, xl: 1.75 } }}>
             <Typography variant="overline" color="text.secondary">
               Table of contents
             </Typography>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mt: 1.25, flexWrap: "wrap" }} useFlexGap>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={0.85} sx={{ mt: 1, flexWrap: "wrap" }} useFlexGap>
               {sections.map((section, index) => (
                 <Button
                   key={section.id}
                   component="a"
                   href={`#${section.id}`}
-                  sx={{ justifyContent: "flex-start" }}
+                  size="small"
+                  sx={{ justifyContent: "flex-start", borderRadius: 999, px: 1.5, py: 0.4, fontSize: 13 }}
                   variant="outlined"
                 >
                   {`${index + 1}. ${section.title}`}
@@ -149,16 +150,17 @@ export function WorkspaceSurfaceLayout({ title, eyebrow, description, metrics, s
               defaultExpanded={section.defaultExpanded ?? true}
               disableGutters
               sx={{
-                bgcolor: "rgba(255,255,255,0.92)",
-                boxShadow: "none",
-                borderRadius: 0,
+                bgcolor: "background.paper",
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: "16px !important",
                 overflow: "hidden",
                 "&::before": { display: "none" },
               }}
             >
-              <AccordionSummary expandIcon={<ExpandMoreRounded />} sx={{ px: 2, py: 0.35 }}>
+              <AccordionSummary expandIcon={<ExpandMoreRounded sx={{ color: "primary.main" }} />} sx={{ px: 2.2, py: 0.5 }}>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
-                  <Typography variant="overline" color="text.secondary">
+                  <Typography variant="overline" color="primary.main">
                     Section
                   </Typography>
                   <Typography variant="h3" sx={{ mt: 0.45, overflowWrap: "anywhere" }}>
@@ -171,7 +173,7 @@ export function WorkspaceSurfaceLayout({ title, eyebrow, description, metrics, s
                   ) : null}
                 </Box>
               </AccordionSummary>
-              <AccordionDetails sx={{ px: { xs: 1.35, xl: 1.6 }, pb: { xs: 1.35, xl: 1.6 } }}>{section.content}</AccordionDetails>
+              <AccordionDetails sx={{ px: { xs: 1.5, xl: 2 }, pb: { xs: 1.5, xl: 2 } }}>{section.content}</AccordionDetails>
             </Accordion>
           </Box>
         ))}
@@ -204,8 +206,8 @@ export function EntityWorkspaceSection<T extends Record<string, string | number 
   }, [reset, selectedValues]);
 
   return (
-    <Stack spacing={1.5}>
-      <Card sx={{ bgcolor: "rgba(252,253,255,0.94)" }}>
+    <Stack spacing={2}>
+      <Card className="glass-card" sx={{ bgcolor: "background.paper", borderRadius: 2.5, border: "1px solid", borderColor: "divider" }}>
         <CardContent sx={{ p: { xs: 2, xl: 2.2 } }}>
           <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: 1.5 }}>
             <Box sx={{ minWidth: 0, flex: 1 }}>
@@ -237,6 +239,10 @@ export function EntityWorkspaceSection<T extends Record<string, string | number 
                         px: 1.7,
                         py: 1.25,
                         alignItems: "flex-start",
+                        borderRadius: 2,
+                        bgcolor: isActive ? undefined : "background.panel",
+                        border: "1px solid",
+                        borderColor: isActive ? "primary.main" : "divider",
                       })}
                     >
                       <Box sx={{ minWidth: 0, width: "100%" }}>
@@ -265,7 +271,7 @@ export function EntityWorkspaceSection<T extends Record<string, string | number 
                 })}
               </List>
             ) : (
-              <Card variant="outlined" sx={{ borderStyle: "dashed", bgcolor: "rgba(248,251,255,0.84)" }}>
+              <Card variant="outlined" sx={{ borderStyle: "dashed", borderColor: "divider", bgcolor: "background.panel", borderRadius: 2 }}>
                 <CardContent>
                   <Typography color="text.secondary">{emptyMessage}</Typography>
                 </CardContent>
@@ -275,7 +281,7 @@ export function EntityWorkspaceSection<T extends Record<string, string | number 
         </CardContent>
       </Card>
 
-      <Card sx={{ bgcolor: "rgba(255,255,255,0.94)" }}>
+      <Card className="glass-card" sx={{ bgcolor: "background.paper", borderRadius: 2.5, border: "1px solid", borderColor: "divider" }}>
         <CardContent sx={{ p: { xs: 2, xl: 2.2 } }}>
           <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: 1.5 }}>
             <Box sx={{ minWidth: 0, flex: 1 }}>

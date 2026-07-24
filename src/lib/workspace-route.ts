@@ -1,4 +1,5 @@
 import type { WorkspaceSurface } from "@/components/workspace-surfaces";
+import { stringToUuid } from "@/lib/domain/project-factory";
 import type { Project } from "@/lib/domain/types";
 
 export type WorkspaceRouteState = {
@@ -51,8 +52,10 @@ export function resolveProjectWritingSelection(project: Project, selection?: Wri
   const chapters = project.books[0]?.chapters ?? [];
 
   if (selection?.chapterId && selection.sceneId) {
-    const requestedChapter = chapters.find((chapter) => chapter.id === selection.chapterId);
-    const requestedScene = requestedChapter?.scenes.find((scene) => scene.id === selection.sceneId);
+    const targetChapterId = stringToUuid(selection.chapterId);
+    const targetSceneId = stringToUuid(selection.sceneId);
+    const requestedChapter = chapters.find((chapter) => chapter.id === selection.chapterId || chapter.id === targetChapterId);
+    const requestedScene = requestedChapter?.scenes.find((scene) => scene.id === selection.sceneId || scene.id === targetSceneId);
 
     if (requestedChapter && requestedScene) {
       return {
@@ -63,7 +66,8 @@ export function resolveProjectWritingSelection(project: Project, selection?: Wri
   }
 
   if (selection?.chapterId) {
-    const requestedChapter = chapters.find((chapter) => chapter.id === selection.chapterId);
+    const targetChapterId = stringToUuid(selection.chapterId);
+    const requestedChapter = chapters.find((chapter) => chapter.id === selection.chapterId || chapter.id === targetChapterId);
     const firstScene = requestedChapter?.scenes[0];
 
     if (requestedChapter && firstScene) {
@@ -98,7 +102,8 @@ export function getProjectNavigationPath(
 export function resolveWorkspaceRoute(projects: Project[], routeState: WorkspaceRouteState): ResolvedWorkspaceRoute {
   const activeProjects = projects.filter((project) => project.lifecycleState === "active");
   const hasExplicitProjectSelection = Boolean(routeState.projectId);
-  const requestedProject = activeProjects.find((project) => project.id === routeState.projectId) ?? null;
+  const targetProjectId = routeState.projectId ? stringToUuid(routeState.projectId) : null;
+  const requestedProject = activeProjects.find((project) => project.id === routeState.projectId || project.id === targetProjectId) ?? null;
   const project = hasExplicitProjectSelection ? requestedProject : null;
   const surface = routeState.surface ?? "writing";
 

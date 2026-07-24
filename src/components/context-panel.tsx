@@ -5,12 +5,10 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { alpha } from "@mui/material/styles";
 import type { ReactNode } from "react";
 import { SceneMetadataForm } from "@/components/scene-metadata-form";
 import type { SceneLinkPayload } from "@/lib/domain/project-factory";
 import type { Character, GlossaryEntry, Location, PlotThread, Project, Scene, Socium, TechnologyEntry, TimelineEvent } from "@/lib/domain/types";
-import { brandTokens } from "@/theme/brand-tokens";
 
 type ContextPanelProps = {
   project: Project;
@@ -315,7 +313,18 @@ function LinkManagementSection({
                         void section.onToggle(nextIds);
                       }}
                       size="small"
-                      sx={{ overflowWrap: "anywhere", minWidth: 0, maxWidth: "100%", whiteSpace: "normal", textAlign: "left", justifyContent: "flex-start" }}
+                      sx={{
+                        overflowWrap: "anywhere",
+                        minWidth: 0,
+                        maxWidth: "100%",
+                        whiteSpace: "normal",
+                        textAlign: "left",
+                        justifyContent: "flex-start",
+                        borderRadius: 999,
+                        px: 1.25,
+                        py: 0.35,
+                        fontSize: 12.5,
+                      }}
                       variant={isSelected ? "contained" : "outlined"}
                     >
                       {section.getLabel(item)}
@@ -353,16 +362,16 @@ function LinkedSection({
       <Stack spacing={0.85}>
         {items.length > 0 ? (
           items.map((item) => (
-            <Box key={`${eyebrow}-${item.title}`} sx={{ border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panel, 0.72), p: 1.15 }}>
-              <Typography sx={{ fontWeight: 700, overflowWrap: "anywhere" }}>{item.title}</Typography>
+            <Box key={`${eyebrow}-${item.title}`} className="glass-card" sx={{ border: "1px solid", borderColor: "divider", bgcolor: "background.panel", borderRadius: 2, p: 1.25 }}>
+              <Typography sx={{ fontWeight: 700, overflowWrap: "anywhere", color: "text.primary" }}>{item.title}</Typography>
               <Typography color="text.secondary" sx={{ mt: 0.45, lineHeight: 1.65, overflowWrap: "anywhere" }} variant="body2">
                 {item.detail}
               </Typography>
             </Box>
           ))
         ) : (
-          <Box sx={{ border: "1px dashed", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panel, 0.72), p: 1.15 }}>
-            <Typography color="text.secondary">{emptyMessage}</Typography>
+          <Box sx={{ border: "1px dashed", borderColor: "divider", bgcolor: "background.panel", borderRadius: 2, p: 1.25 }}>
+            <Typography color="text.secondary" variant="body2">{emptyMessage}</Typography>
           </Box>
         )}
       </Stack>
@@ -382,17 +391,17 @@ function InspectorSection({
   children: ReactNode;
 }) {
   return (
-    <Box sx={{ border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.paper, 0.96), p: 1.35 }}>
+    <Box className="glass-card" sx={{ borderRadius: 2.5, border: "1px solid", borderColor: "divider", bgcolor: "background.paper", p: 1.5 }}>
       <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row", xl: "column" }, justifyContent: "space-between", gap: 1, alignItems: { xs: "flex-start", sm: "center", xl: "flex-start" }, mb: 1.1 }}>
           <Box sx={{ minWidth: 0 }}>
-            <Typography variant="overline" color="text.secondary">
+            <Typography variant="overline" color="primary.main">
               {eyebrow}
             </Typography>
-            <Typography variant="h3" sx={{ mt: 0.75, overflowWrap: "anywhere" }}>
+            <Typography variant="h3" sx={{ mt: 0.5, overflowWrap: "anywhere" }}>
               {title}
             </Typography>
           </Box>
-          {summary ? <Chip label={summary} variant="outlined" /> : null}
+          {summary ? <Chip label={summary} variant="outlined" size="small" /> : null}
         </Box>
       {children}
     </Box>
@@ -401,11 +410,11 @@ function InspectorSection({
 
 function InspectorMetric({ label, value }: { label: string; value: string }) {
   return (
-    <Box sx={{ minWidth: 0, border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panelMuted, 0.82), p: 1.05 }}>
+    <Box sx={{ minWidth: 0, border: "1px solid", borderColor: "divider", bgcolor: "background.panelMuted", borderRadius: 2, p: 1.05 }}>
         <Typography variant="overline" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
           {label}
         </Typography>
-        <Typography variant="h3" sx={{ mt: 0.45, overflowWrap: "anywhere", fontSize: "1.05rem" }}>
+        <Typography variant="h3" sx={{ mt: 0.45, overflowWrap: "anywhere", fontSize: "1.05rem", color: "text.primary" }}>
           {value}
         </Typography>
     </Box>

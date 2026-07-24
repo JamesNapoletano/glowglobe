@@ -12,8 +12,41 @@ import type { RichTextDocument, Scene } from "@/lib/domain/types";
 const emptyDocument: RichTextDocument = {
   type: "doc",
   version: 1,
-  content: [{ type: "paragraph", content: [{ type: "text", text: "" }] }],
+  content: [{ type: "paragraph" }],
 };
+
+function sanitizeNodeForTiptap(node: any): any {
+  if (!node || typeof node !== "object") return node;
+  if (node.type === "paragraph" && Array.isArray(node.content)) {
+    const filtered = node.content
+      .filter((child: any) => !(child && child.type === "text" && child.text === ""))
+      .map(sanitizeNodeForTiptap);
+    return filtered.length > 0 ? { ...node, content: filtered } : { type: "paragraph" };
+  }
+  if (Array.isArray(node.content)) {
+    return {
+      ...node,
+      content: node.content
+        .filter((child: any) => !(child && child.type === "text" && child.text === ""))
+        .map(sanitizeNodeForTiptap),
+    };
+  }
+  return node;
+}
+
+function sanitizeRichTextDocument(doc?: RichTextDocument): RichTextDocument {
+  if (!doc || doc.type !== "doc" || !Array.isArray(doc.content)) {
+    return emptyDocument;
+  }
+  const sanitizedContent = doc.content
+    .filter((n) => n && typeof n === "object")
+    .map(sanitizeNodeForTiptap);
+  return {
+    type: "doc",
+    version: 1,
+    content: sanitizedContent.length > 0 ? sanitizedContent : [{ type: "paragraph" }],
+  };
+}
 
 type SceneBodyEditorProps = {
   scene?: Scene;
@@ -23,7 +56,8 @@ type SceneBodyEditorProps = {
 export function SceneBodyEditor({ scene, onSave }: SceneBodyEditorProps) {
   const isClientReady = useClientReady();
   const sceneId = scene?.id ?? null;
-  const sceneDocument = scene?.editorDocument ?? emptyDocument;
+  const rawDocument = scene?.editorDocument ?? emptyDocument;
+  const sceneDocument = useMemo(() => sanitizeRichTextDocument(rawDocument), [rawDocument]);
   const sceneDocumentSignature = useMemo(
     () => getDocumentSignature(sceneDocument),
     [sceneDocument],

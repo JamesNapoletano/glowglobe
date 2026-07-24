@@ -55,7 +55,6 @@ const theme = createTheme({
           transition: 'all 0.2s ease-in-out',
           '&:hover': {
             backgroundColor: '#8b5cf6',
-            transform: 'translateY(-1px)',
           }
         }
       },

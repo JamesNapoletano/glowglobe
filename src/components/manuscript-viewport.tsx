@@ -21,7 +21,6 @@ import {
 } from "@/components/selected-state-guardrails";
 import { SceneBodyEditor } from "@/components/scene-body-editor";
 import type { Project, RichTextDocument } from "@/lib/domain/types";
-import { brandTokens } from "@/theme/brand-tokens";
 
 type ManuscriptViewportProps = {
   project: Project;
@@ -58,7 +57,7 @@ export function ManuscriptViewport({
   const sceneCount = chapters.reduce((count, chapter) => count + chapter.scenes.length, 0);
 
   return (
-    <Stack spacing={1.5} sx={{ height: "100%", minHeight: 0, overflow: "hidden" }}>
+    <Stack spacing={1.5} sx={{ height: "100%", minHeight: 0 }}>
       <Box sx={{ pb: 1.35, borderBottom: "1px solid", borderColor: "divider" }}>
         <Typography variant="overline" color="text.secondary">
           Writing Studio
@@ -75,10 +74,10 @@ export function ManuscriptViewport({
       </Box>
 
       <Grid container spacing={1.5} sx={{ flex: 1, minHeight: 0 }}>
-        <Grid size={{ xs: 12, xl: 4 }} sx={{ minHeight: 0, display: "flex" }}>
-          <Box sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: 1.2 }}>
-            <Box sx={{ border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panel, 0.82), p: 1.35 }}>
-              <Typography variant="overline" color="text.secondary">
+        <Grid size={{ xs: 12, md: 4.5, lg: 4 }} sx={{ minHeight: 0, height: "100%", display: "flex" }}>
+          <Box sx={{ flex: 1, minHeight: 0, height: "100%", maxHeight: { xs: "none", md: "calc(100vh - 200px)" }, display: "flex", flexDirection: "column", gap: 1.2, pt: "6px", pb: "6px", px: "4px" }}>
+            <Box className="glass-card" sx={{ borderRadius: 2.5, border: "1px solid", borderColor: "divider", bgcolor: "background.panel", p: 1.5, flexShrink: 0 }}>
+              <Typography variant="overline" color="primary.main">
                 Writing studio
               </Typography>
               <Stack spacing={0.85} sx={{ mt: 1.1 }}>
@@ -91,8 +90,8 @@ export function ManuscriptViewport({
               </Stack>
             </Box>
 
-            <Box sx={{ flex: 1, minHeight: 0, border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panelMuted, 0.78), p: 1.35, display: "flex", flexDirection: "column" }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1.25, alignItems: { xs: "flex-start", sm: "center" }, flexDirection: { xs: "column", sm: "row" } }}>
+            <Box className="glass-card" sx={{ flex: 1, minHeight: 0, height: 0, border: "1px solid", borderColor: "divider", bgcolor: "background.panelMuted", borderRadius: 2.5, p: 1.5, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1.25, alignItems: { xs: "flex-start", sm: "center" }, flexDirection: { xs: "column", sm: "row" }, flexShrink: 0 }}>
                 <Box sx={{ minWidth: 0 }}>
                   <Typography variant="overline" color="text.secondary">
                     Structure
@@ -104,8 +103,8 @@ export function ManuscriptViewport({
                 <Button
                   onClick={() => void onCreateChapter()}
                   size="small"
-                  startIcon={<AddRounded />}
-                  sx={{ bgcolor: "background.paper", borderColor: "divider" }}
+                  startIcon={<AddRounded fontSize="small" />}
+                  sx={{ bgcolor: "background.paper", borderColor: "divider", px: 1.2, py: 0.35 }}
                   variant="outlined"
                 >
                   Chapter
@@ -113,15 +112,32 @@ export function ManuscriptViewport({
               </Box>
 
               <Box
-                sx={{
+                sx={(theme) => ({
                   mt: 1.5,
                   minHeight: 0,
+                  height: 0,
                   flex: 1,
                   overflowY: "auto",
-                  pr: 0.35,
-                }}
+                  overflowX: "hidden",
+                  pt: "6px",
+                  pb: "6px",
+                  px: "4px",
+                  "&::-webkit-scrollbar": {
+                    width: 6,
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    background: "transparent",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    borderRadius: 999,
+                    backgroundColor: alpha(theme.palette.text.primary, 0.2),
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.primary.main, 0.5),
+                    },
+                  },
+                })}
               >
-                <List disablePadding sx={{ mt: 0.85, display: "grid", gap: 0.8 }}>
+                <List disablePadding sx={{ display: "grid", gap: 0.8, pt: "4px", pb: "6px", px: "2px" }}>
                   {chapters.map((chapter) => {
                     const isActiveChapter = chapter.id === activeChapter?.id;
                     const canDeleteChapter = chapters.length > 1;
@@ -129,13 +145,13 @@ export function ManuscriptViewport({
                     return (
                       <Box
                         key={chapter.id}
-                        sx={{
+                        sx={(theme) => ({
                           minWidth: 0,
                           borderRadius: 2,
                           p: 0.55,
-                          bgcolor: isActiveChapter ? alpha(brandTokens.palette.primary.main, 0.1) : alpha(brandTokens.palette.background.manuscript, 0.62),
-                          border: isActiveChapter ? `1px solid ${alpha(brandTokens.palette.primary.main, 0.28)}` : `1px solid ${alpha(brandTokens.palette.secondary.dark, 0.12)}`,
-                        }}
+                          bgcolor: isActiveChapter ? alpha(theme.palette.primary.main, 0.1) : alpha(theme.palette.background.paper, 0.62),
+                          border: isActiveChapter ? `1px solid ${alpha(theme.palette.primary.main, 0.28)}` : `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+                        })}
                       >
                         <Box sx={{ display: "flex", alignItems: "stretch", gap: 0.35 }}>
                           <ListItemButton
@@ -148,24 +164,12 @@ export function ManuscriptViewport({
                               alignItems: "flex-start",
                               borderRadius: 2,
                               position: "relative",
-                              bgcolor: isActiveChapter ? undefined : alpha(brandTokens.palette.background.manuscript, 0.9),
+                              bgcolor: isActiveChapter ? undefined : alpha(theme.palette.background.paper, 0.85),
                               flex: 1,
                               minWidth: 0,
-                              "&::before": isActiveChapter
-                                ? {
-                                    content: '""',
-                                    position: "absolute",
-                                    left: 0,
-                                    top: 8,
-                                    bottom: 8,
-                                    width: 3,
-                                    borderRadius: 999,
-                                    backgroundColor: "primary.main",
-                                  }
-                                : undefined,
                             })}
                           >
-                            <Box sx={{ minWidth: 0, width: "100%", pl: isActiveChapter ? 0.45 : 0 }}>
+                            <Box sx={{ minWidth: 0, width: "100%" }}>
                               <Typography
                                 className={contrastGuardClassNames.primary}
                                 sx={{
@@ -212,15 +216,36 @@ export function ManuscriptViewport({
                               <Button
                                 onClick={() => void onCreateScene(chapter.id)}
                                 size="small"
-                                 sx={{ minWidth: 0, px: 1, bgcolor: alpha(brandTokens.palette.primary.main, 0.12) }}
+                                startIcon={<AddRounded fontSize="small" />}
+                                sx={(theme) => ({ minWidth: 0, px: 1, py: 0.25, fontSize: 12, bgcolor: alpha(theme.palette.primary.main, 0.1) })}
                                 variant="text"
                               >
-                                + Add scene
+                                Add scene
                               </Button>
                             </Box>
 
                             {chapter.scenes.length ? (
-                              <List disablePadding sx={{ display: "grid", gap: 0.45 }}>
+                              <List
+                                disablePadding
+                                sx={(theme) => ({
+                                  display: "grid",
+                                  gap: 0.45,
+                                  maxHeight: 280,
+                                  overflowY: "auto",
+                                  overflowX: "hidden",
+                                  pt: "6px",
+                                  pb: "6px",
+                                  px: "4px",
+                                  pr: 0.35,
+                                  "&::-webkit-scrollbar": {
+                                    width: 4,
+                                  },
+                                  "&::-webkit-scrollbar-thumb": {
+                                    borderRadius: 999,
+                                    backgroundColor: alpha(theme.palette.text.primary, 0.2),
+                                  },
+                                })}
+                              >
                                 {chapter.scenes.map((scene) => {
                                   const isActiveScene = scene.id === activeScene?.id;
                                   const canDeleteScene = chapter.scenes.length > 1;
@@ -232,7 +257,7 @@ export function ManuscriptViewport({
                                         ...getStrongSelectedListItemSx(theme, isActiveScene),
                                         ml: 0.2,
                                         borderRadius: 999,
-                                         bgcolor: isActiveScene ? undefined : alpha(brandTokens.palette.background.manuscript, 0.92),
+                                        bgcolor: isActiveScene ? undefined : alpha(theme.palette.background.paper, 0.88),
                                         display: "flex",
                                         alignItems: "center",
                                         gap: 0.35,
@@ -306,14 +331,14 @@ export function ManuscriptViewport({
           </Box>
         </Grid>
 
-        <Grid size={{ xs: 12, xl: 8 }} sx={{ minHeight: 0, height: "100%", display: "flex" }}>
-          <Box sx={{ flex: 1, minHeight: 0, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", pr: 0.2, display: "flex", flexDirection: "column", gap: 1.25 }}>
-              <Box sx={{ border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.paper, 0.92), p: 1.5 }}>
+        <Grid size={{ xs: 12, md: 7.5, lg: 8 }} sx={{ minHeight: 0, height: "100%", display: "flex" }}>
+          <Box sx={{ flex: 1, minHeight: 0, height: "100%", display: "flex", flexDirection: "column" }}>
+            <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", pt: "6px", pb: "6px", px: "4px", pr: 0.5, display: "flex", flexDirection: "column", gap: 1.25 }}>
+              <Box className="glass-card" sx={{ borderRadius: 2.5, border: "1px solid", borderColor: "divider", bgcolor: "background.paper", p: 2 }}>
                 <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, justifyContent: "space-between", gap: 1.5, alignItems: { xs: "flex-start", lg: "center" } }}>
                   <Box sx={{ minWidth: 0 }}>
-                    <Typography variant="overline" color="text.secondary">
-                      Draft
+                    <Typography variant="overline" color="primary.main">
+                      Draft Scene
                     </Typography>
                     <Typography variant="h2" sx={{ mt: 0.45, overflowWrap: "anywhere" }}>
                       {activeScene?.title ?? "Untitled scene"}
@@ -325,13 +350,13 @@ export function ManuscriptViewport({
                   <Chip
                     label="Autosave on blur"
                     size="small"
-                    sx={{ bgcolor: alpha(brandTokens.palette.background.panel, 0.92), maxWidth: "100%", ".MuiChip-label": { overflowWrap: "anywhere" } }}
+                    sx={{ bgcolor: "background.panel", borderColor: "divider", maxWidth: "100%", ".MuiChip-label": { overflowWrap: "anywhere" } }}
                     variant="outlined"
                   />
                 </Box>
               </Box>
 
-              <Box sx={{ border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.manuscript, 0.88), p: { xs: 1.2, xl: 1.35 }, flexShrink: 0 }}>
+              <Box className="glass-card" sx={{ borderRadius: 2.5, border: "1px solid", borderColor: "divider", bgcolor: "background.manuscript", p: { xs: 1.2, xl: 1.35 }, flexShrink: 0 }}>
                 <SceneBodyEditor
                   onSave={(document) =>
                     activeChapter && activeScene ? onUpdateSceneDocument(activeChapter.id, activeScene.id, document) : Promise.resolve()
@@ -342,7 +367,7 @@ export function ManuscriptViewport({
 
               <Grid container spacing={1.25}>
                 <Grid size={{ xs: 12, xl: 8 }}>
-                  <Box sx={{ height: "100%", border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panel, 0.8), p: 1.4 }}>
+                  <Box className="glass-card" sx={{ height: "100%", borderRadius: 2.5, border: "1px solid", borderColor: "divider", bgcolor: "background.panel", p: 1.6 }}>
                     <Box>
                       <Typography variant="overline" color="text.secondary">
                         Scene note
@@ -356,7 +381,7 @@ export function ManuscriptViewport({
                   </Box>
                 </Grid>
                 <Grid size={{ xs: 12, xl: 4 }}>
-                  <Box sx={{ height: "100%", border: "1px solid", borderColor: "divider", bgcolor: alpha(brandTokens.palette.background.panel, 0.8), p: 1.4 }}>
+                  <Box className="glass-card" sx={{ height: "100%", borderRadius: 2.5, border: "1px solid", borderColor: "divider", bgcolor: "background.panel", p: 1.6 }}>
                     <Typography variant="overline" color="text.secondary">
                       Session cues
                     </Typography>
@@ -378,11 +403,11 @@ export function ManuscriptViewport({
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <Box sx={{ bgcolor: alpha(brandTokens.palette.background.manuscript, 0.92), border: "1px solid", borderColor: "divider", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.72)", p: 1.15 }}>
+    <Box sx={{ bgcolor: "background.manuscript", border: "1px solid", borderColor: "divider", borderRadius: 2, p: 1.15 }}>
         <Typography variant="overline" color="text.secondary">
           {label}
         </Typography>
-        <Typography variant="h3" sx={{ mt: 0.45, overflowWrap: "anywhere", fontSize: "1.12rem" }}>
+        <Typography variant="h3" sx={{ mt: 0.45, overflowWrap: "anywhere", fontSize: "1.12rem", color: "text.primary" }}>
           {value}
         </Typography>
     </Box>

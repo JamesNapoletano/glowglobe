@@ -19,7 +19,8 @@ const sampleDocument: RichTextDocument = {
 };
 
 export const sampleProject: Project = {
-  id: "project-aurora-protocol",
+  id: "a0100000-0000-4000-8000-000000000001",
+  displayName: "Aurora Protocol",
   createdAt: timestamp,
   updatedAt: timestamp,
   title: "Aurora Protocol",
@@ -30,21 +31,24 @@ export const sampleProject: Project = {
   lifecycleState: "active",
   books: [
     {
-      id: "book-aurora-protocol",
+      id: "a0200000-0000-4000-8000-000000000002",
+      displayName: "Aurora Protocol",
       createdAt: timestamp,
       updatedAt: timestamp,
       title: "Aurora Protocol",
       summary: "Book one manuscript draft.",
       chapters: [
         {
-          id: "chapter-01",
+          id: "a0300000-0000-4000-8000-000000000003",
+          displayName: "Chapter 01 · Glass Morning",
           createdAt: timestamp,
           updatedAt: timestamp,
           title: "Chapter 01 · Glass Morning",
           summary: "Mara detects the first anomaly in the observatory ring.",
           scenes: [
             {
-              id: "scene-01",
+              id: "a0400000-0000-4000-8000-000000000004",
+              displayName: "Scene 01 · Opening Signal",
               createdAt: timestamp,
               updatedAt: timestamp,
               title: "Scene 01 · Opening Signal",
@@ -56,13 +60,13 @@ export const sampleProject: Project = {
                 "She tagged the anomaly for the timeline, marked the scene against the observatory ring, and opened a note for the name she still could not say aloud.",
               ],
               editorDocument: sampleDocument,
-              characterIds: ["character-mara-vale"],
-              sociumIds: ["socium-aurora-accord"],
-              locationIds: ["location-helion-observatory"],
-              technologyEntryIds: ["technology-aurora-array"],
-              timelineEventIds: ["timeline-first-signal"],
-              plotThreadIds: ["thread-signal-mystery"],
-              glossaryEntryIds: ["glossary-aurora-array"],
+              characterIds: ["a0600000-0000-4000-8000-000000000006"],
+              sociumIds: ["a0900000-0000-4000-8000-000000000010"],
+              locationIds: ["a1100000-0000-4000-8000-000000000012"],
+              technologyEntryIds: ["a1000000-0000-4000-8000-000000000011"],
+              timelineEventIds: ["a1400000-0000-4000-8000-000000000015"],
+              plotThreadIds: ["a1600000-0000-4000-8000-000000000017"],
+              glossaryEntryIds: ["a2100000-0000-4000-8000-000000000022"],
             },
           ],
         },
@@ -71,7 +75,8 @@ export const sampleProject: Project = {
   ],
   documents: [
     {
-      id: "document-manuscript-outline",
+      id: "a0500000-0000-4000-8000-000000000005",
+      displayName: "Manuscript Outline",
       createdAt: timestamp,
       updatedAt: timestamp,
       title: "Manuscript Outline",
@@ -81,7 +86,8 @@ export const sampleProject: Project = {
   ],
   characters: [
     {
-      id: "character-mara-vale",
+      id: "a0600000-0000-4000-8000-000000000006",
+      displayName: "Mara Vale",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Mara Vale",
@@ -94,9 +100,9 @@ export const sampleProject: Project = {
       age: "34",
       birthDate: "Cycle 184, Frostwake",
       gender: "Woman",
-      speciesId: "species-human",
+      speciesId: "a0800000-0000-4000-8000-000000000009",
       occupation: "Astronomer",
-      sociumId: "socium-aurora-accord",
+      sociumId: "a0900000-0000-4000-8000-000000000010",
       residence: "Helion Observatory",
       origin: "Cindervale Transfer Habitat",
       firstAppearance: "Chapter 01 · Glass Morning",
@@ -116,10 +122,11 @@ export const sampleProject: Project = {
       unresolvedThreads: "Whether she can trust Iven before the Accord turns on both of them.",
       notes: "Keep her competence visible without flattening her emotional reserve.",
       quote: "Noise only looks random until someone survives it long enough to hear the grammar.",
-      relationshipIds: ["relationship-mara-iven"],
+      relationshipIds: ["a0700000-0000-4000-8000-000000000008"],
     },
     {
-      id: "character-iven-rook",
+      id: "a0600000-0000-4000-8000-000000000007",
+      displayName: "Iven Rook",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Iven Rook",
@@ -132,9 +139,9 @@ export const sampleProject: Project = {
       age: "38",
       birthDate: "Cycle 180, Emberturn",
       gender: "Man",
-      speciesId: "species-human",
+      speciesId: "a0800000-0000-4000-8000-000000000009",
       occupation: "Recovery pilot",
-      sociumId: "socium-aurora-accord",
+      sociumId: "a0900000-0000-4000-8000-000000000010",
       residence: "Helion Observatory transit deck",
       origin: "Sera perimeter flotilla",
       firstAppearance: "Chapter 02 · Static Wake",
@@ -154,23 +161,25 @@ export const sampleProject: Project = {
       unresolvedThreads: "Whether his loyalty to Mara can survive the consequences of choosing her side openly.",
       notes: "Use him to surface institutional stakes without turning him into a pure exposition device.",
       quote: "You can call it containment if you want. Gravity still knows a cage when it sees one.",
-      relationshipIds: ["relationship-mara-iven"],
+      relationshipIds: ["a0700000-0000-4000-8000-000000000008"],
     },
   ],
   relationships: [
     {
-      id: "relationship-mara-iven",
+      id: "a0700000-0000-4000-8000-000000000008",
+      displayName: "Ally relationship between Mara and Iven",
       createdAt: timestamp,
       updatedAt: timestamp,
-      sourceCharacterId: "character-mara-vale",
-      targetCharacterId: "character-iven-rook",
+      sourceCharacterId: "a0600000-0000-4000-8000-000000000006",
+      targetCharacterId: "a0600000-0000-4000-8000-000000000007",
       type: "ally",
       notes: "Professional trust is fragile at first, but they become each other's safest witness as the signal mystery deepens.",
     },
   ],
   species: [
     {
-      id: "species-human",
+      id: "a0800000-0000-4000-8000-000000000009",
+      displayName: "Human",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Human",
@@ -183,7 +192,8 @@ export const sampleProject: Project = {
   ],
   sociums: [
     {
-      id: "socium-aurora-accord",
+      id: "a0900000-0000-4000-8000-000000000010",
+      displayName: "Aurora Accord",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Aurora Accord",
@@ -206,7 +216,8 @@ export const sampleProject: Project = {
   ],
   technologyEntries: [
     {
-      id: "technology-aurora-array",
+      id: "a1000000-0000-4000-8000-000000000011",
+      displayName: "Aurora Array",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Aurora Array",
@@ -216,7 +227,8 @@ export const sampleProject: Project = {
   ],
   locations: [
     {
-      id: "location-helion-observatory",
+      id: "a1100000-0000-4000-8000-000000000012",
+      displayName: "Helion Observatory",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Helion Observatory",
@@ -226,7 +238,8 @@ export const sampleProject: Project = {
   ],
   regions: [
     {
-      id: "region-upper-ring",
+      id: "a1200000-0000-4000-8000-000000000013",
+      displayName: "Upper Ring",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Upper Ring",
@@ -235,7 +248,8 @@ export const sampleProject: Project = {
   ],
   planets: [
     {
-      id: "planet-sera",
+      id: "a1300000-0000-4000-8000-000000000014",
+      displayName: "Sera",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Sera",
@@ -244,7 +258,8 @@ export const sampleProject: Project = {
   ],
   timelineEvents: [
     {
-      id: "timeline-first-signal",
+      id: "a1400000-0000-4000-8000-000000000015",
+      displayName: "First signal fracture detected",
       createdAt: timestamp,
       updatedAt: timestamp,
       title: "First signal fracture detected",
@@ -254,17 +269,19 @@ export const sampleProject: Project = {
   ],
   corkboardCards: [
     {
-      id: "card-opening-signal",
+      id: "a1500000-0000-4000-8000-000000000016",
+      displayName: "Opening Signal",
       createdAt: timestamp,
       updatedAt: timestamp,
       title: "Opening Signal",
       summary: "Introduce Mara, the observatory, and the mystery encoded in the storm noise.",
-      linkedSceneId: "scene-01",
+      linkedSceneId: "a0400000-0000-4000-8000-000000000004",
     },
   ],
   plotThreads: [
     {
-      id: "thread-signal-mystery",
+      id: "a1600000-0000-4000-8000-000000000017",
+      displayName: "Signal mystery",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Signal mystery",
@@ -273,7 +290,8 @@ export const sampleProject: Project = {
   ],
   acts: [
     {
-      id: "act-discovery",
+      id: "a1700000-0000-4000-8000-000000000018",
+      displayName: "Act I · Discovery",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Act I · Discovery",
@@ -283,19 +301,21 @@ export const sampleProject: Project = {
   ],
   beats: [
     {
-      id: "beat-first-fracture",
+      id: "a1800000-0000-4000-8000-000000000019",
+      displayName: "Signal fracture",
       createdAt: timestamp,
       updatedAt: timestamp,
       title: "Signal fracture",
       summary: "The mystery enters the story and forces Mara to respond.",
       order: 1,
-      actId: "act-discovery",
-      sceneId: "scene-01",
+      actId: "a1700000-0000-4000-8000-000000000018",
+      sceneId: "a0400000-0000-4000-8000-000000000004",
     },
   ],
   subplots: [
     {
-      id: "subplot-trust",
+      id: "a1900000-0000-4000-8000-000000000020",
+      displayName: "Trust and disclosure",
       createdAt: timestamp,
       updatedAt: timestamp,
       name: "Trust and disclosure",
@@ -304,18 +324,20 @@ export const sampleProject: Project = {
   ],
   povMarkers: [
     {
-      id: "pov-mara-opening",
+      id: "a2000000-0000-4000-8000-000000000021",
+      displayName: "Mara POV",
       createdAt: timestamp,
       updatedAt: timestamp,
       label: "Mara POV",
       summary: "Opening chapter viewpoint anchor.",
-      characterId: "character-mara-vale",
-      sceneId: "scene-01",
+      characterId: "a0600000-0000-4000-8000-000000000006",
+      sceneId: "a0400000-0000-4000-8000-000000000004",
     },
   ],
   glossaryEntries: [
     {
-      id: "glossary-aurora-array",
+      id: "a2100000-0000-4000-8000-000000000022",
+      displayName: "Aurora Array",
       createdAt: timestamp,
       updatedAt: timestamp,
       term: "Aurora Array",
@@ -324,7 +346,8 @@ export const sampleProject: Project = {
   ],
   loreNotes: [
     {
-      id: "lore-observatory-charter",
+      id: "a2200000-0000-4000-8000-000000000023",
+      displayName: "Observatory Charter",
       createdAt: timestamp,
       updatedAt: timestamp,
       title: "Observatory Charter",
@@ -333,7 +356,8 @@ export const sampleProject: Project = {
   ],
   researchNotes: [
     {
-      id: "research-gas-giant-reference",
+      id: "a2300000-0000-4000-8000-000000000024",
+      displayName: "Gas giant storm reference",
       createdAt: timestamp,
       updatedAt: timestamp,
       title: "Gas giant storm reference",
@@ -343,7 +367,8 @@ export const sampleProject: Project = {
   ],
   revisionSnapshots: [
     {
-      id: "snapshot-opening-pass",
+      id: "a2400000-0000-4000-8000-000000000025",
+      displayName: "Opening pass",
       createdAt: timestamp,
       updatedAt: timestamp,
       label: "Opening pass",

@@ -109,15 +109,16 @@ export type ResearchNoteInput = { title: string; summary: string; source?: strin
 
 export function createProjectFromInput(input: CreateProjectInput): Project {
   const timestamp = new Date().toISOString();
-  const projectId = createEntityId("project");
-  const bookId = createEntityId("book");
-  const chapterId = createEntityId("chapter");
-  const sceneId = createEntityId("scene");
+  const projectId = createEntityId();
+  const bookId = createEntityId();
+  const chapterId = createEntityId();
+  const sceneId = createEntityId();
   const normalizedTitle = input.title.trim();
   const summary = input.description.trim() || `A new ${input.genre.toLowerCase()} project.`;
 
   return {
     id: projectId,
+    displayName: normalizedTitle,
     createdAt: timestamp,
     updatedAt: timestamp,
     title: normalizedTitle,
@@ -128,6 +129,7 @@ export function createProjectFromInput(input: CreateProjectInput): Project {
     books: [
       {
         id: bookId,
+        displayName: normalizedTitle,
         createdAt: timestamp,
         updatedAt: timestamp,
         title: normalizedTitle,
@@ -135,6 +137,7 @@ export function createProjectFromInput(input: CreateProjectInput): Project {
         chapters: [
           {
             id: chapterId,
+            displayName: "Chapter 01",
             createdAt: timestamp,
             updatedAt: timestamp,
             title: "Chapter 01",
@@ -184,6 +187,7 @@ export function updateProjectDetails(project: Project, input: UpdateProjectDetai
       ...book,
       updatedAt: timestamp,
       title: nextTitle,
+      displayName: nextTitle,
     };
   });
 
@@ -191,6 +195,7 @@ export function updateProjectDetails(project: Project, input: UpdateProjectDetai
     ...project,
     updatedAt: timestamp,
     title: nextTitle,
+    displayName: nextTitle,
     genre: nextGenre,
     description: nextDescription,
     status: input.status,
@@ -215,7 +220,6 @@ export function createEmptyDocument(): RichTextDocument {
     content: [
       {
         type: "paragraph",
-        content: [{ type: "text", text: "" }],
       },
     ],
   };
@@ -227,12 +231,14 @@ export function sortProjectsByUpdatedAt(projects: Project[]): Project[] {
 
 export function createChapter(input?: { title?: string; summary?: string }): Chapter {
   const timestamp = new Date().toISOString();
+  const title = input?.title?.trim() || "New Chapter";
 
   return {
-    id: createEntityId("chapter"),
+    id: createEntityId(),
+    displayName: title,
     createdAt: timestamp,
     updatedAt: timestamp,
-    title: input?.title?.trim() || "New Chapter",
+    title,
     summary: input?.summary?.trim() || "A new chapter scaffold.",
     scenes: [createScene()],
   };
@@ -244,12 +250,14 @@ export function createScene(
   forcedTimestamp?: string,
 ): Scene {
   const timestamp = forcedTimestamp ?? new Date().toISOString();
+  const title = input?.title?.trim() || "New Scene";
 
   return {
-    id: forcedId ?? createEntityId("scene"),
+    id: forcedId ?? createEntityId(),
+    displayName: title,
     createdAt: timestamp,
     updatedAt: timestamp,
-    title: input?.title?.trim() || "New Scene",
+    title,
     summary: input?.summary?.trim() || "A fresh scene scaffold ready for drafting.",
     excerpt: [
       "This scene is ready for drafting. Add the first beats, then connect it to character, setting, and timeline context.",
@@ -272,7 +280,8 @@ export function addChapterToProject(project: Project, input?: { title?: string; 
 
   if (!primaryBook) {
     const nextBook = {
-      id: createEntityId("book"),
+      id: createEntityId(),
+      displayName: project.title,
       createdAt: timestamp,
       updatedAt: timestamp,
       title: project.title,
@@ -421,44 +430,48 @@ export function updateSceneLinks(project: Project, chapterId: string, sceneId: s
 }
 
 export function upsertCharacter(project: Project, input: CharacterInput, characterId?: string) {
-  return upsertCollectionItem(project, "characters", characterId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    name: input.name.trim() || existing?.name || "Untitled character",
-    role: input.role.trim(),
-    summary: input.summary.trim(),
-    arc: input.arc.trim(),
-    status: normalizeCharacterStatus(input.status, existing?.status),
-    aliases: input.aliases.trim(),
-    pronouns: input.pronouns.trim(),
-    age: input.age.trim(),
-    birthDate: input.birthDate.trim(),
-    gender: input.gender.trim(),
-    speciesId: input.speciesId?.trim() || undefined,
-    occupation: input.occupation.trim(),
-    sociumId: input.sociumId?.trim() || undefined,
-    residence: input.residence.trim(),
-    origin: input.origin.trim(),
-    firstAppearance: input.firstAppearance.trim(),
-    appearance: input.appearance.trim(),
-    distinguishingFeatures: input.distinguishingFeatures.trim(),
-    skills: input.skills.trim(),
-    goals: input.goals.trim(),
-    fears: input.fears.trim(),
-    internalConflict: input.internalConflict.trim(),
-    externalConflict: input.externalConflict.trim(),
-    background: input.background.trim(),
-    personality: input.personality.trim(),
-    voice: input.voice.trim(),
-    mannerisms: input.mannerisms.trim(),
-    beliefs: input.beliefs.trim(),
-    secrets: input.secrets.trim(),
-    unresolvedThreads: input.unresolvedThreads.trim(),
-    notes: input.notes.trim(),
-    quote: input.quote.trim(),
-    relationshipIds: existing?.relationshipIds ?? [],
-  }));
+  return upsertCollectionItem(project, "characters", characterId, (timestamp, id, existing) => {
+    const name = input.name.trim() || existing?.name || "Untitled character";
+    return {
+      id,
+      displayName: name,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      name,
+      role: input.role.trim(),
+      summary: input.summary.trim(),
+      arc: input.arc.trim(),
+      status: normalizeCharacterStatus(input.status, existing?.status),
+      aliases: input.aliases.trim(),
+      pronouns: input.pronouns.trim(),
+      age: input.age.trim(),
+      birthDate: input.birthDate.trim(),
+      gender: input.gender.trim(),
+      speciesId: input.speciesId?.trim() || undefined,
+      occupation: input.occupation.trim(),
+      sociumId: input.sociumId?.trim() || undefined,
+      residence: input.residence.trim(),
+      origin: input.origin.trim(),
+      firstAppearance: input.firstAppearance.trim(),
+      appearance: input.appearance.trim(),
+      distinguishingFeatures: input.distinguishingFeatures.trim(),
+      skills: input.skills.trim(),
+      goals: input.goals.trim(),
+      fears: input.fears.trim(),
+      internalConflict: input.internalConflict.trim(),
+      externalConflict: input.externalConflict.trim(),
+      background: input.background.trim(),
+      personality: input.personality.trim(),
+      voice: input.voice.trim(),
+      mannerisms: input.mannerisms.trim(),
+      beliefs: input.beliefs.trim(),
+      secrets: input.secrets.trim(),
+      unresolvedThreads: input.unresolvedThreads.trim(),
+      notes: input.notes.trim(),
+      quote: input.quote.trim(),
+      relationshipIds: existing?.relationshipIds ?? [],
+    };
+  });
 }
 
 export function removeCharacter(project: Project, characterId: string) {
@@ -492,15 +505,21 @@ export function removeCharacter(project: Project, characterId: string) {
 }
 
 export function upsertRelationship(project: Project, input: RelationshipInput, relationshipId?: string) {
-  return syncCharacterRelationshipIds(upsertCollectionItem(project, "relationships", relationshipId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    sourceCharacterId: input.sourceCharacterId,
-    targetCharacterId: input.targetCharacterId,
-    type: normalizeRelationshipType(input.type, existing?.type),
-    notes: input.notes.trim(),
-  })));
+  return syncCharacterRelationshipIds(upsertCollectionItem(project, "relationships", relationshipId, (timestamp, id, existing) => {
+    const type = normalizeRelationshipType(input.type, existing?.type);
+    const notes = input.notes.trim();
+    const displayName = notes || `${type.charAt(0).toUpperCase() + type.slice(1)} relationship`;
+    return {
+      id,
+      displayName,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      sourceCharacterId: input.sourceCharacterId,
+      targetCharacterId: input.targetCharacterId,
+      type,
+      notes,
+    };
+  }));
 }
 
 export function removeRelationship(project: Project, relationshipId: string) {
@@ -508,27 +527,31 @@ export function removeRelationship(project: Project, relationshipId: string) {
 }
 
 export function upsertSocium(project: Project, input: SociumInput, sociumId?: string) {
-  return upsertCollectionItem(project, "sociums", sociumId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    name: input.name.trim() || existing?.name || "Untitled socium",
-    type: normalizeSociumType(input.type, existing?.type),
-    summary: input.summary.trim(),
-    leadership: input.leadership.trim(),
-    headquarters: input.headquarters.trim(),
-    territory: input.territory.trim(),
-    scope: input.scope.trim(),
-    goals: input.goals.trim(),
-    beliefs: input.beliefs.trim(),
-    resources: input.resources.trim(),
-    methods: input.methods.trim(),
-    allies: input.allies.trim(),
-    rivals: input.rivals.trim(),
-    publicReputation: input.publicReputation.trim(),
-    internalConflicts: input.internalConflicts.trim(),
-    notes: input.notes.trim(),
-  }));
+  return upsertCollectionItem(project, "sociums", sociumId, (timestamp, id, existing) => {
+    const name = input.name.trim() || existing?.name || "Untitled socium";
+    return {
+      id,
+      displayName: name,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      name,
+      type: normalizeSociumType(input.type, existing?.type),
+      summary: input.summary.trim(),
+      leadership: input.leadership.trim(),
+      headquarters: input.headquarters.trim(),
+      territory: input.territory.trim(),
+      scope: input.scope.trim(),
+      goals: input.goals.trim(),
+      beliefs: input.beliefs.trim(),
+      resources: input.resources.trim(),
+      methods: input.methods.trim(),
+      allies: input.allies.trim(),
+      rivals: input.rivals.trim(),
+      publicReputation: input.publicReputation.trim(),
+      internalConflicts: input.internalConflicts.trim(),
+      notes: input.notes.trim(),
+    };
+  });
 }
 
 export function removeSocium(project: Project, sociumId: string) {
@@ -536,17 +559,21 @@ export function removeSocium(project: Project, sociumId: string) {
 }
 
 export function upsertTechnologyEntry(project: Project, input: TechnologyEntryInput, technologyEntryId?: string) {
-  return upsertCollectionItem(project, "technologyEntries", technologyEntryId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    name: input.name.trim() || existing?.name || "Untitled technology",
-    summary: input.summary.trim(),
-    ruleNotes: input.ruleNotesText
-      .split("\n")
-      .map((item) => item.trim())
-      .filter(Boolean),
-  }));
+  return upsertCollectionItem(project, "technologyEntries", technologyEntryId, (timestamp, id, existing) => {
+    const name = input.name.trim() || existing?.name || "Untitled technology";
+    return {
+      id,
+      displayName: name,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      name,
+      summary: input.summary.trim(),
+      ruleNotes: input.ruleNotesText
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean),
+    };
+  });
 }
 
 export function removeTechnologyEntry(project: Project, technologyEntryId: string) {
@@ -576,14 +603,18 @@ export function removeTechnologyEntry(project: Project, technologyEntryId: strin
 }
 
 export function upsertLocation(project: Project, input: LocationInput, locationId?: string) {
-  return upsertCollectionItem(project, "locations", locationId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    name: input.name.trim() || existing?.name || "Untitled location",
-    summary: input.summary.trim(),
-    regionName: input.regionName.trim(),
-  }));
+  return upsertCollectionItem(project, "locations", locationId, (timestamp, id, existing) => {
+    const name = input.name.trim() || existing?.name || "Untitled location";
+    return {
+      id,
+      displayName: name,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      name,
+      summary: input.summary.trim(),
+      regionName: input.regionName.trim(),
+    };
+  });
 }
 
 export function removeLocation(project: Project, locationId: string) {
@@ -613,13 +644,17 @@ export function removeLocation(project: Project, locationId: string) {
 }
 
 export function upsertRegion(project: Project, input: RegionInput, regionId?: string) {
-  return upsertCollectionItem(project, "regions", regionId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    name: input.name.trim() || existing?.name || "Untitled region",
-    summary: input.summary.trim(),
-  }));
+  return upsertCollectionItem(project, "regions", regionId, (timestamp, id, existing) => {
+    const name = input.name.trim() || existing?.name || "Untitled region";
+    return {
+      id,
+      displayName: name,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      name,
+      summary: input.summary.trim(),
+    };
+  });
 }
 
 export function removeRegion(project: Project, regionId: string) {
@@ -627,13 +662,17 @@ export function removeRegion(project: Project, regionId: string) {
 }
 
 export function upsertPlanet(project: Project, input: PlanetInput, planetId?: string) {
-  return upsertCollectionItem(project, "planets", planetId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    name: input.name.trim() || existing?.name || "Untitled planet",
-    summary: input.summary.trim(),
-  }));
+  return upsertCollectionItem(project, "planets", planetId, (timestamp, id, existing) => {
+    const name = input.name.trim() || existing?.name || "Untitled planet";
+    return {
+      id,
+      displayName: name,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      name,
+      summary: input.summary.trim(),
+    };
+  });
 }
 
 export function removePlanet(project: Project, planetId: string) {
@@ -641,17 +680,21 @@ export function removePlanet(project: Project, planetId: string) {
 }
 
 export function upsertSpecies(project: Project, input: SpeciesInput, speciesId?: string) {
-  return upsertCollectionItem(project, "species", speciesId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    name: input.name.trim() || existing?.name || "Untitled species",
-    summary: input.summary.trim(),
-    traits: input.traits.trim(),
-    lifespan: input.lifespan.trim(),
-    cultureNotes: input.cultureNotes.trim(),
-    originWorld: input.originWorld.trim(),
-  }));
+  return upsertCollectionItem(project, "species", speciesId, (timestamp, id, existing) => {
+    const name = input.name.trim() || existing?.name || "Untitled species";
+    return {
+      id,
+      displayName: name,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      name,
+      summary: input.summary.trim(),
+      traits: input.traits.trim(),
+      lifespan: input.lifespan.trim(),
+      cultureNotes: input.cultureNotes.trim(),
+      originWorld: input.originWorld.trim(),
+    };
+  });
 }
 
 export function removeSpecies(project: Project, speciesId: string) {
@@ -669,14 +712,18 @@ export function removeSpecies(project: Project, speciesId: string) {
 }
 
 export function upsertTimelineEvent(project: Project, input: TimelineEventInput, timelineEventId?: string) {
-  return upsertCollectionItem(project, "timelineEvents", timelineEventId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    title: input.title.trim() || existing?.title || "Untitled event",
-    summary: input.summary.trim(),
-    sequence: Number.isFinite(input.sequence) ? input.sequence : existing?.sequence ?? 1,
-  }));
+  return upsertCollectionItem(project, "timelineEvents", timelineEventId, (timestamp, id, existing) => {
+    const title = input.title.trim() || existing?.title || "Untitled event";
+    return {
+      id,
+      displayName: title,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      title,
+      summary: input.summary.trim(),
+      sequence: Number.isFinite(input.sequence) ? input.sequence : existing?.sequence ?? 1,
+    };
+  });
 }
 
 export function removeTimelineEvent(project: Project, timelineEventId: string) {
@@ -706,14 +753,18 @@ export function removeTimelineEvent(project: Project, timelineEventId: string) {
 }
 
 export function upsertCorkboardCard(project: Project, input: CorkboardCardInput, corkboardCardId?: string) {
-  return upsertCollectionItem(project, "corkboardCards", corkboardCardId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    title: input.title.trim() || existing?.title || "Untitled card",
-    summary: input.summary.trim(),
-    linkedSceneId: input.linkedSceneId,
-  }));
+  return upsertCollectionItem(project, "corkboardCards", corkboardCardId, (timestamp, id, existing) => {
+    const title = input.title.trim() || existing?.title || "Untitled card";
+    return {
+      id,
+      displayName: title,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      title,
+      summary: input.summary.trim(),
+      linkedSceneId: input.linkedSceneId,
+    };
+  });
 }
 
 export function removeCorkboardCard(project: Project, corkboardCardId: string) {
@@ -721,13 +772,17 @@ export function removeCorkboardCard(project: Project, corkboardCardId: string) {
 }
 
 export function upsertPlotThread(project: Project, input: PlotThreadInput, plotThreadId?: string) {
-  return upsertCollectionItem(project, "plotThreads", plotThreadId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    name: input.name.trim() || existing?.name || "Untitled plot thread",
-    summary: input.summary.trim(),
-  }));
+  return upsertCollectionItem(project, "plotThreads", plotThreadId, (timestamp, id, existing) => {
+    const name = input.name.trim() || existing?.name || "Untitled plot thread";
+    return {
+      id,
+      displayName: name,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      name,
+      summary: input.summary.trim(),
+    };
+  });
 }
 
 export function removePlotThread(project: Project, plotThreadId: string) {
@@ -757,14 +812,18 @@ export function removePlotThread(project: Project, plotThreadId: string) {
 }
 
 export function upsertAct(project: Project, input: ActInput, actId?: string) {
-  return upsertCollectionItem(project, "acts", actId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    name: input.name.trim() || existing?.name || "Untitled act",
-    summary: input.summary.trim(),
-    order: Number.isFinite(input.order) ? input.order : existing?.order ?? 1,
-  }));
+  return upsertCollectionItem(project, "acts", actId, (timestamp, id, existing) => {
+    const name = input.name.trim() || existing?.name || "Untitled act";
+    return {
+      id,
+      displayName: name,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      name,
+      summary: input.summary.trim(),
+      order: Number.isFinite(input.order) ? input.order : existing?.order ?? 1,
+    };
+  });
 }
 
 export function removeAct(project: Project, actId: string) {
@@ -782,16 +841,20 @@ export function removeAct(project: Project, actId: string) {
 }
 
 export function upsertBeat(project: Project, input: BeatInput, beatId?: string) {
-  return upsertCollectionItem(project, "beats", beatId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    title: input.title.trim() || existing?.title || "Untitled beat",
-    summary: input.summary.trim(),
-    order: Number.isFinite(input.order) ? input.order : existing?.order ?? 1,
-    actId: input.actId,
-    sceneId: input.sceneId,
-  }));
+  return upsertCollectionItem(project, "beats", beatId, (timestamp, id, existing) => {
+    const title = input.title.trim() || existing?.title || "Untitled beat";
+    return {
+      id,
+      displayName: title,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      title,
+      summary: input.summary.trim(),
+      order: Number.isFinite(input.order) ? input.order : existing?.order ?? 1,
+      actId: input.actId,
+      sceneId: input.sceneId,
+    };
+  });
 }
 
 export function removeBeat(project: Project, beatId: string) {
@@ -799,13 +862,17 @@ export function removeBeat(project: Project, beatId: string) {
 }
 
 export function upsertSubplot(project: Project, input: SubplotInput, subplotId?: string) {
-  return upsertCollectionItem(project, "subplots", subplotId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    name: input.name.trim() || existing?.name || "Untitled subplot",
-    summary: input.summary.trim(),
-  }));
+  return upsertCollectionItem(project, "subplots", subplotId, (timestamp, id, existing) => {
+    const name = input.name.trim() || existing?.name || "Untitled subplot";
+    return {
+      id,
+      displayName: name,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      name,
+      summary: input.summary.trim(),
+    };
+  });
 }
 
 export function removeSubplot(project: Project, subplotId: string) {
@@ -813,15 +880,19 @@ export function removeSubplot(project: Project, subplotId: string) {
 }
 
 export function upsertPovMarker(project: Project, input: PovMarkerInput, povMarkerId?: string) {
-  return upsertCollectionItem(project, "povMarkers", povMarkerId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    label: input.label.trim() || existing?.label || "Untitled POV marker",
-    summary: input.summary.trim(),
-    characterId: input.characterId,
-    sceneId: input.sceneId,
-  }));
+  return upsertCollectionItem(project, "povMarkers", povMarkerId, (timestamp, id, existing) => {
+    const label = input.label.trim() || existing?.label || "Untitled POV marker";
+    return {
+      id,
+      displayName: label,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      label,
+      summary: input.summary.trim(),
+      characterId: input.characterId,
+      sceneId: input.sceneId,
+    };
+  });
 }
 
 export function removePovMarker(project: Project, povMarkerId: string) {
@@ -829,13 +900,17 @@ export function removePovMarker(project: Project, povMarkerId: string) {
 }
 
 export function upsertGlossaryEntry(project: Project, input: GlossaryEntryInput, glossaryEntryId?: string) {
-  return upsertCollectionItem(project, "glossaryEntries", glossaryEntryId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    term: input.term.trim() || existing?.term || "Untitled term",
-    definition: input.definition.trim(),
-  }));
+  return upsertCollectionItem(project, "glossaryEntries", glossaryEntryId, (timestamp, id, existing) => {
+    const term = input.term.trim() || existing?.term || "Untitled term";
+    return {
+      id,
+      displayName: term,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      term,
+      definition: input.definition.trim(),
+    };
+  });
 }
 
 export function removeGlossaryEntry(project: Project, glossaryEntryId: string) {
@@ -865,13 +940,17 @@ export function removeGlossaryEntry(project: Project, glossaryEntryId: string) {
 }
 
 export function upsertLoreNote(project: Project, input: LoreNoteInput, loreNoteId?: string) {
-  return upsertCollectionItem(project, "loreNotes", loreNoteId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    title: input.title.trim() || existing?.title || "Untitled lore note",
-    summary: input.summary.trim(),
-  }));
+  return upsertCollectionItem(project, "loreNotes", loreNoteId, (timestamp, id, existing) => {
+    const title = input.title.trim() || existing?.title || "Untitled lore note";
+    return {
+      id,
+      displayName: title,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      title,
+      summary: input.summary.trim(),
+    };
+  });
 }
 
 export function removeLoreNote(project: Project, loreNoteId: string) {
@@ -879,14 +958,18 @@ export function removeLoreNote(project: Project, loreNoteId: string) {
 }
 
 export function upsertResearchNote(project: Project, input: ResearchNoteInput, researchNoteId?: string) {
-  return upsertCollectionItem(project, "researchNotes", researchNoteId, (timestamp, id, existing) => ({
-    id,
-    createdAt: existing?.createdAt ?? timestamp,
-    updatedAt: timestamp,
-    title: input.title.trim() || existing?.title || "Untitled research note",
-    summary: input.summary.trim(),
-    source: input.source?.trim() || undefined,
-  }));
+  return upsertCollectionItem(project, "researchNotes", researchNoteId, (timestamp, id, existing) => {
+    const title = input.title.trim() || existing?.title || "Untitled research note";
+    return {
+      id,
+      displayName: title,
+      createdAt: existing?.createdAt ?? timestamp,
+      updatedAt: timestamp,
+      title,
+      summary: input.summary.trim(),
+      source: input.source?.trim() || undefined,
+    };
+  });
 }
 
 export function removeResearchNote(project: Project, researchNoteId: string) {
@@ -919,9 +1002,85 @@ function createInitialProjectStatus(description: string): ProjectStatus {
   return description.trim() ? "planning" : "idea";
 }
 
-function createEntityId(prefix: string): string {
-  const uuid = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  return `${prefix}-${uuid}`;
+export function generateUuid(): string {
+  if (typeof globalThis.crypto?.randomUUID === "function") {
+    return globalThis.crypto.randomUUID();
+  }
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+    (
+      Number(c) ^
+      (Math.trunc(Math.random() * 256) & (15 >> (Number(c) / 4)))
+    ).toString(16)
+  );
+}
+
+export function isValidUuid(id?: string): boolean {
+  if (!id || typeof id !== "string") return false;
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
+const KNOWN_UUID_MAP: Record<string, string> = {
+  "project-aurora-protocol": "a0100000-0000-4000-8000-000000000001",
+  "book-aurora-protocol": "a0200000-0000-4000-8000-000000000002",
+  "chapter-01": "a0300000-0000-4000-8000-000000000003",
+  "scene-01": "a0400000-0000-4000-8000-000000000004",
+  "document-manuscript-outline": "a0500000-0000-4000-8000-000000000005",
+  "character-mara-vale": "a0600000-0000-4000-8000-000000000006",
+  "character-iven-rook": "a0600000-0000-4000-8000-000000000007",
+  "relationship-mara-iven": "a0700000-0000-4000-8000-000000000008",
+  "species-human": "a0800000-0000-4000-8000-000000000009",
+  "socium-aurora-accord": "a0900000-0000-4000-8000-000000000010",
+  "technology-aurora-array": "a1000000-0000-4000-8000-000000000011",
+  "location-helion-observatory": "a1100000-0000-4000-8000-000000000012",
+  "region-upper-ring": "a1200000-0000-4000-8000-000000000013",
+  "planet-sera": "a1300000-0000-4000-8000-000000000014",
+  "timeline-first-signal": "a1400000-0000-4000-8000-000000000015",
+  "card-opening-signal": "a1500000-0000-4000-8000-000000000016",
+  "thread-signal-mystery": "a1600000-0000-4000-8000-000000000017",
+  "act-discovery": "a1700000-0000-4000-8000-000000000018",
+  "beat-first-fracture": "a1800000-0000-4000-8000-000000000019",
+  "subplot-trust": "a1900000-0000-4000-8000-000000000020",
+  "pov-mara-opening": "a2000000-0000-4000-8000-000000000021",
+  "glossary-aurora-array": "a2100000-0000-4000-8000-000000000022",
+  "lore-observatory-charter": "a2200000-0000-4000-8000-000000000023",
+  "research-gas-giant-reference": "a2300000-0000-4000-8000-000000000024",
+  "snapshot-opening-pass": "a2400000-0000-4000-8000-000000000025",
+};
+
+export function stringToUuid(id?: string | null): string {
+  if (!id || typeof id !== "string") {
+    return generateUuid();
+  }
+  if (isValidUuid(id)) {
+    return id;
+  }
+  if (KNOWN_UUID_MAP[id]) {
+    return KNOWN_UUID_MAP[id];
+  }
+  let h1 = 0x811c9dc5;
+  let h2 = 0x01000193;
+  for (let i = 0; i < id.length; i++) {
+    const c = id.charCodeAt(i);
+    h1 = Math.imul(h1 ^ c, 0x01000193);
+    h2 = Math.imul(h2 ^ c, 0x811c9dc5);
+  }
+  const hex1 = (h1 >>> 0).toString(16).padStart(8, "0");
+  const hex2 = (h2 >>> 0).toString(16).padStart(8, "0");
+  const hex3 = ((h1 ^ h2) >>> 0).toString(16).padStart(8, "0");
+  const hex4 = ((h1 + h2) >>> 0).toString(16).padStart(8, "0");
+
+  const p1 = hex1;
+  const p2 = hex2.slice(0, 4);
+  const p3 = `4${hex2.slice(4, 7)}`;
+  const p4 = `a${hex3.slice(0, 3)}`;
+  const p5 = `${hex3.slice(3, 7)}${hex4.slice(0, 8)}`;
+
+  return `${p1}-${p2}-${p3}-${p4}-${p5}`;
+}
+
+function createEntityId(): string {
+  return generateUuid();
 }
 
 function updateScene(
@@ -972,7 +1131,7 @@ function upsertCollectionItem<K extends CollectionKeys>(
   const timestamp = new Date().toISOString();
   const currentItems = project[key] as Project[K];
   const existing = currentItems.find((item) => item.id === itemId) as Project[K][number] | undefined;
-  const id = itemId ?? createEntityId(getCollectionPrefix(key));
+  const id = itemId ?? createEntityId();
   const nextItem = factory(timestamp, id, existing);
   const nextItems = existing
     ? currentItems.map((item) => (item.id === id ? nextItem : item))
@@ -1014,47 +1173,6 @@ type CollectionKeys =
   | "glossaryEntries"
   | "loreNotes"
   | "researchNotes";
-
-function getCollectionPrefix(key: CollectionKeys): string {
-  switch (key) {
-    case "characters":
-      return "character";
-    case "relationships":
-      return "relationship";
-    case "sociums":
-      return "socium";
-    case "technologyEntries":
-      return "technology";
-    case "locations":
-      return "location";
-    case "regions":
-      return "region";
-    case "planets":
-      return "planet";
-    case "species":
-      return "species";
-    case "timelineEvents":
-      return "timeline";
-    case "corkboardCards":
-      return "card";
-    case "plotThreads":
-      return "thread";
-    case "acts":
-      return "act";
-    case "beats":
-      return "beat";
-    case "subplots":
-      return "subplot";
-    case "povMarkers":
-      return "pov";
-    case "glossaryEntries":
-      return "glossary";
-    case "loreNotes":
-      return "lore";
-    case "researchNotes":
-      return "research";
-  }
-}
 
 function normalizeSociumType(input: string, fallback?: Project["sociums"][number]["type"]) {
   switch (input) {

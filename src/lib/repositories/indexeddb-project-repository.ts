@@ -1,4 +1,5 @@
 import { normalizeProject } from "@/lib/domain/project-normalizer";
+import { stringToUuid } from "@/lib/domain/project-factory";
 import type { Project } from "@/lib/domain/types";
 import type { ProjectRepository } from "@/lib/repositories/interfaces";
 
@@ -14,9 +15,26 @@ export class IndexedDbProjectRepository implements ProjectRepository {
     const transaction = database.transaction(PROJECT_STORE, "readonly");
     const store = transaction.objectStore(PROJECT_STORE);
     const request = store.getAll();
-    const projects = await requestToPromise<Project[]>(request);
+    const rawProjects = await requestToPromise<Project[]>(request);
     await transactionToPromise(transaction);
-    return projects.map(normalizeProject);
+
+    const normalizedProjects = rawProjects.map(normalizeProject);
+
+    // Auto-migrate legacy non-UUID keys stored in IndexedDB
+    for (let i = 0; i < rawProjects.length; i++) {
+      const raw = rawProjects[i];
+      const normalized = normalizedProjects[i];
+      if (raw && normalized && raw.id !== normalized.id) {
+        try {
+          await this.remove(raw.id);
+          await this.save(normalized);
+        } catch {
+          // Silent migration fallback
+        }
+      }
+    }
+
+    return normalizedProjects;
   }
 
   async getById(id: string): Promise<Project | undefined> {
@@ -24,7 +42,14 @@ export class IndexedDbProjectRepository implements ProjectRepository {
     const transaction = database.transaction(PROJECT_STORE, "readonly");
     const store = transaction.objectStore(PROJECT_STORE);
     const request = store.get(id);
-    const project = await requestToPromise<Project | undefined>(request);
+    let project = await requestToPromise<Project | undefined>(request);
+    if (!project) {
+      const mappedId = stringToUuid(id);
+      if (mappedId !== id) {
+        const fallbackRequest = store.get(mappedId);
+        project = await requestToPromise<Project | undefined>(fallbackRequest);
+      }
+    }
     await transactionToPromise(transaction);
     return project ? normalizeProject(project) : undefined;
   }

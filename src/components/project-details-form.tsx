@@ -1,20 +1,28 @@
 "use client";
 
-import { Alert, Button, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import FileDownloadRounded from "@mui/icons-material/FileDownloadRounded";
+import { Alert, Box, Button, MenuItem, Stack, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type { Project } from "@/lib/domain/types";
 import type { UpdateProjectDetailsInput } from "@/lib/domain/project-factory";
+import { useThemeMode } from "@/theme/theme-context";
 
 type ProjectDetailsFormProps = {
   project: Project;
   isLoading?: boolean;
   onSaveProjectDetails: (input: UpdateProjectDetailsInput) => Promise<void>;
+  onExportProject?: () => void;
 };
 
 const PROJECT_STATUS_OPTIONS: Project["status"][] = ["idea", "planning", "drafting", "revising", "complete"];
 
-export function ProjectDetailsForm({ project, isLoading = false, onSaveProjectDetails }: ProjectDetailsFormProps) {
+export function ProjectDetailsForm({
+  project,
+  isLoading = false,
+  onSaveProjectDetails,
+  onExportProject,
+}: ProjectDetailsFormProps) {
   const [preview, setPreview] = useState<string>("");
   const {
     register,
@@ -55,7 +63,7 @@ export function ProjectDetailsForm({ project, isLoading = false, onSaveProjectDe
           Manage project metadata
         </Typography>
         <Typography color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
-          Update your project title, genre, summary, and progress state at any time.
+          Update your project title, genre, summary, and progress state, or export a local JSON backup.
         </Typography>
       </Stack>
 
@@ -95,9 +103,25 @@ export function ProjectDetailsForm({ project, isLoading = false, onSaveProjectDe
           {...register("description")}
         />
 
-        <Button disabled={isSubmitting || isLoading} size="large" sx={{ alignSelf: "flex-start" }} type="submit" variant="contained">
-          {isSubmitting ? "Saving..." : "Save project details"}
-        </Button>
+        <ThemeModeSelector />
+
+        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", alignItems: "center" }}>
+          <Button disabled={isSubmitting || isLoading} size="large" type="submit" variant="contained">
+            {isSubmitting ? "Saving..." : "Save project details"}
+          </Button>
+
+          {onExportProject && (
+            <Button
+              size="large"
+              variant="outlined"
+              color="primary"
+              onClick={onExportProject}
+              startIcon={<FileDownloadRounded />}
+            >
+              Export Backup (.json)
+            </Button>
+          )}
+        </Box>
       </Stack>
 
       {preview ? (
@@ -106,5 +130,34 @@ export function ProjectDetailsForm({ project, isLoading = false, onSaveProjectDe
         </Alert>
       ) : null}
     </Stack>
+  );
+}
+
+function ThemeModeSelector() {
+  const { themeMode, setThemeMode } = useThemeMode();
+
+  return (
+    <Box sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, p: 2, bgcolor: "background.paper" }}>
+      <Typography variant="overline" color="primary.main">
+        Workspace Theme Preference
+      </Typography>
+      <Typography variant="h4" sx={{ mt: 0.3, mb: 1 }}>
+        UI Aesthetic Mode
+      </Typography>
+      <TextField
+        fullWidth
+        label="Theme"
+        select
+        value={themeMode}
+        onChange={(e) => setThemeMode(e.target.value as "earthy" | "glassmorphic")}
+      >
+        <MenuItem value="glassmorphic">
+          🔮 Glassmorphic Obsidian (Midnight Dark Studio & Glowing Aura)
+        </MenuItem>
+        <MenuItem value="earthy">
+          📜 Earthy Parchment (Warm Editorial Parchment & Classic Paper)
+        </MenuItem>
+      </TextField>
+    </Box>
   );
 }

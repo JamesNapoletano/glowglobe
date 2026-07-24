@@ -9,6 +9,7 @@ import type { WorkspaceSurface } from "@/components/workspace-surfaces";
 import type { SurfaceSelectionKey, SurfaceSelections } from "@/components/workspace-surface-content";
 import { normalizeProject } from "@/lib/domain/project-normalizer";
 import type { Project } from "@/lib/domain/types";
+import type { SubscriptionTier } from "@/lib/domain/user";
 import {
   getProjectNavigationPath,
   getProjectWritingScenePath,
@@ -67,6 +68,7 @@ import {
   upsertTechnologyEntry,
   upsertTimelineEvent,
 } from "@/lib/domain/project-factory";
+import { downloadProjectAsJsonFile } from "@/lib/domain/project-serializer";
 import { sampleProject } from "@/lib/mock-data/sample-project";
 import { IndexedDbProjectRepository } from "@/lib/repositories/indexeddb-project-repository";
 
@@ -100,9 +102,25 @@ export function WorkspaceRoot({ routeState }: WorkspaceRootProps) {
   const repository = useMemo(() => new IndexedDbProjectRepository(), []);
   const hasMounted = useClientReady();
   const [projects, setProjects] = useState<Project[]>(() => workspaceProjectsCache);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => workspaceProjectsCache.length === 0);
   const [storageMessage, setStorageMessage] = useState<string>(() => workspaceStorageMessageCache);
   const [surfaceSelections, setSurfaceSelections] = useState<SurfaceSelections>({});
+  const [userTier, setUserTier] = useState<SubscriptionTier>(() => {
+    if (typeof window !== "undefined") {
+      const stored = window.localStorage.getItem("glowglobe.userTier");
+      if (stored === "free" || stored === "hobby" || stored === "pro") {
+        return stored;
+      }
+    }
+    return "free";
+  });
+
+  const handleSelectTierUpgrade = (newTier: SubscriptionTier) => {
+    setUserTier(newTier);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("glowglobe.userTier", newTier);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -192,7 +210,7 @@ export function WorkspaceRoot({ routeState }: WorkspaceRootProps) {
     [activeProject, surfaceSelections],
   );
 
-  if (!hasMounted || isLoading) {
+  if (!hasMounted || (isLoading && projects.length === 0)) {
     return <WorkspaceLoadingShell message={storageMessage} />;
   }
 
@@ -601,6 +619,35 @@ export function WorkspaceRoot({ routeState }: WorkspaceRootProps) {
     }, PERSISTENCE_DEBOUNCE_MS);
   }
 
+  const handleSwitchProject = () => {
+    router.push("/");
+  };
+
+  const handleExportProject = (projectId: string) => {
+    const targetProject = projects.find((project) => project.id === projectId);
+    if (targetProject) {
+      downloadProjectAsJsonFile(targetProject);
+    }
+  };
+
+  const handleImportProject = async (importedProject: Project) => {
+    const normalizedProject = normalizeProject(importedProject);
+    const path = getProjectNavigationPath(normalizedProject, "writing");
+
+    updateProjectCache(setProjects, upsertProject(workspaceProjectsCache, normalizedProject));
+    updateStorageMessage(setStorageMessage, "Saving imported project locally...");
+
+    try {
+      await repository.save(normalizedProject);
+      updateStorageMessage(setStorageMessage, "Imported project saved to IndexedDB");
+    } catch {
+      workspacePendingPersistences.set(normalizedProject.id, { project: normalizedProject });
+      updateStorageMessage(setStorageMessage, "Imported project saved in temporary memory because IndexedDB was unavailable.");
+    }
+
+    navigateToPendingCanonicalPath(path);
+  };
+
   return (
     <AppShell
       activeProjectId={activeProject?.id ?? ""}
@@ -615,6 +662,8 @@ export function WorkspaceRoot({ routeState }: WorkspaceRootProps) {
       onCreateScene={handleCreateScene}
       onDeleteChapter={handleDeleteChapter}
       onDeleteScene={handleDeleteScene}
+      onExportProject={handleExportProject}
+      onImportProject={handleImportProject}
       onSelectSurface={handleSelectSurface}
       onSelectSurfaceEntry={handleSelectSurfaceEntry}
       onUpdateProjectDetails={handleUpdateProjectDetails}
@@ -624,6 +673,7 @@ export function WorkspaceRoot({ routeState }: WorkspaceRootProps) {
       onPermanentlyDeleteTrashedProjects={handlePermanentlyDeleteTrashedProjects}
       onSelectChapter={handleSelectChapter}
       onSelectProject={handleSelectProject}
+      onSwitchProject={handleSwitchProject}
       onSelectScene={handleSelectScene}
       onCreateSurfaceEntry={handleCreateSurfaceEntry}
       onDeleteSurfaceEntry={handleDeleteSurfaceEntry}
@@ -633,8 +683,10 @@ export function WorkspaceRoot({ routeState }: WorkspaceRootProps) {
       onSaveSurfaceEntry={handleSaveSurfaceEntry}
       project={activeProject}
       projects={projects}
-      surfaceSelections={resolvedSurfaceSelections}
       storageMessage={storageMessage}
+      surfaceSelections={resolvedSurfaceSelections}
+      userTier={userTier}
+      onSelectTierUpgrade={handleSelectTierUpgrade}
     />
   );
 }
