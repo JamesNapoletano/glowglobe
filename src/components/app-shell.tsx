@@ -4,6 +4,7 @@ import CloseRounded from "@mui/icons-material/CloseRounded";
 import EditRounded from "@mui/icons-material/EditRounded";
 import DeleteRounded from "@mui/icons-material/DeleteRounded";
 import FileDownloadRounded from "@mui/icons-material/FileDownloadRounded";
+import TuneRounded from "@mui/icons-material/TuneRounded";
 import {
   Box,
   Button,
@@ -345,11 +346,11 @@ export function AppShell({
                       <Button
                         size="small"
                         variant="outlined"
-                        startIcon={<EditRounded fontSize="small" />}
-                        onClick={() => setIsEditProjectOpen(true)}
+                        startIcon={<TuneRounded fontSize="small" />}
+                        onClick={() => onSelectSurface("settings")}
                         sx={{ px: 1.2, py: 0.4 }}
                       >
-                        Edit details
+                        Project Settings
                       </Button>
                       {onExportProject && (
                         <Button
@@ -390,6 +391,10 @@ export function AppShell({
                         onDeleteEntry: onDeleteSurfaceEntry,
                         onSaveEntry: onSaveSurfaceEntry,
                         onSelectEntry: onSelectSurfaceEntry,
+                        onUpdateProjectDetails: (input) => onUpdateProjectDetails(project.id, input),
+                        onExportProject: () => onExportProject?.(project.id),
+                        onArchiveProject: () => onArchiveProject(project.id),
+                        onMoveProjectToTrash: () => onMoveProjectToTrash(project.id),
                       }}
                       project={project}
                     />

@@ -118,7 +118,7 @@ export function ProjectSelectionScreen({
                   size="large"
                   sx={{ px: 2, py: 0.8, borderRadius: brandTokens.shape.pillRadius }}
                 >
-                  Theme: {themeMode === "glassmorphic" ? "Glass" : "Earthy"}
+                  Theme: {themeMode === "sunset" ? "Sunset Glow" : themeMode === "earthy" ? "Earthy" : "Glass"}
                 </Button>
                 <Button
                   component={Link}
@@ -201,6 +201,13 @@ export function ProjectSelectionScreen({
                         <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap", alignItems: "center", mb: 1.25 }}>
                           {project.genre ? <Chip label={project.genre} size="small" variant="outlined" color="primary" /> : null}
                           <Chip label={project.status} size="small" variant="filled" sx={{ textTransform: "capitalize" }} />
+                          <Chip
+                            icon={<PaletteRounded style={{ fontSize: 13 }} />}
+                            label={project.themeMode === "sunset" ? "Sunset Glow" : project.themeMode === "earthy" ? "Earthy" : "Glass"}
+                            size="small"
+                            variant="outlined"
+                            sx={{ fontSize: 11, height: 24 }}
+                          />
                         </Box>
 
                         <Typography variant="h3" sx={{ fontSize: 19, fontWeight: 700, mb: 0.75, overflowWrap: "anywhere" }}>

@@ -5,7 +5,7 @@ import { useThemeMode } from "@/theme/theme-context";
 export function AmbientGlassBackground() {
   const { themeMode } = useThemeMode();
 
-  if (themeMode !== "glassmorphic") {
+  if (themeMode === "earthy") {
     return null;
   }
 
@@ -17,3 +17,4 @@ export function AmbientGlassBackground() {
     </div>
   );
 }
+

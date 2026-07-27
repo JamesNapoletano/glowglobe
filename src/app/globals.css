@@ -18,6 +18,12 @@ body.theme-glassmorphic {
   color: #F8FAFC;
 }
 
+body.theme-sunset {
+  background-color: #140C1D;
+  background: radial-gradient(circle at 50% -10%, rgba(249, 115, 22, 0.18), transparent 40%), linear-gradient(180deg, #180E25 0%, #140C1D 60%, #0F0817 100%);
+  color: #FDF4FF;
+}
+
 :root {
   --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-manuscript: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
@@ -41,6 +47,16 @@ body.theme-glassmorphic {
   --editor-selection: rgba(16, 185, 129, 0.28);
   --editor-focus-ring: rgba(52, 211, 153, 0.40);
   --editor-placeholder: rgba(148, 163, 184, 0.65);
+}
+
+body.theme-sunset {
+  --editor-surface: rgba(36, 21, 50, 0.88);
+  --editor-border: rgba(255, 180, 150, 0.18);
+  --surface-alt: rgba(26, 15, 36, 0.78);
+  --foreground: #FDF4FF;
+  --editor-selection: rgba(249, 115, 22, 0.28);
+  --editor-focus-ring: rgba(253, 186, 116, 0.45);
+  --editor-placeholder: rgba(216, 180, 254, 0.65);
 }
 
 /* Keyframe Animations */
@@ -108,6 +124,19 @@ body.theme-glassmorphic {
   animation-delay: -8s;
 }
 
+/* Sunset Theme Aurora Orbs */
+body.theme-sunset .aurora-orb-1 {
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.26) 0%, rgba(234, 88, 12, 0.05) 70%, transparent 100%);
+}
+
+body.theme-sunset .aurora-orb-2 {
+  background: radial-gradient(circle, rgba(244, 63, 94, 0.24) 0%, rgba(225, 29, 72, 0.04) 70%, transparent 100%);
+}
+
+body.theme-sunset .aurora-orb-3 {
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.26) 0%, rgba(126, 34, 206, 0.05) 70%, transparent 100%);
+}
+
 /* Theme-adaptive Utility Classes */
 body.theme-glassmorphic .glass-panel {
   background: rgba(18, 26, 42, 0.68) !important;
@@ -123,6 +152,14 @@ body.theme-earthy .glass-panel {
   -webkit-backdrop-filter: none !important;
   border: 1px solid rgba(117, 102, 83, 0.18) !important;
   box-shadow: 0 10px 24px rgba(67, 52, 35, 0.06) !important;
+}
+
+body.theme-sunset .glass-panel {
+  background: rgba(32, 19, 44, 0.72) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+  border: 1px solid rgba(255, 180, 150, 0.18) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 180, 150, 0.2) !important;
 }
 
 body.theme-glassmorphic .glass-card {
@@ -143,6 +180,15 @@ body.theme-earthy .glass-card {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
 }
 
+body.theme-sunset .glass-card {
+  background: rgba(36, 22, 48, 0.68) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+  border: 1px solid rgba(255, 180, 150, 0.18) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 180, 150, 0.18) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
+}
+
 body.theme-glassmorphic .glass-card:hover {
   border-color: rgba(255, 255, 255, 0.28) !important;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45), 0 0 20px rgba(52, 211, 153, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
@@ -152,6 +198,12 @@ body.theme-glassmorphic .glass-card:hover {
 body.theme-earthy .glass-card:hover {
   border-color: rgba(149, 162, 132, 0.5) !important;
   box-shadow: 0 12px 28px rgba(67, 52, 35, 0.10) !important;
+  transform: translateY(-2.5px) !important;
+}
+
+body.theme-sunset .glass-card:hover {
+  border-color: rgba(255, 180, 150, 0.35) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 22px rgba(249, 115, 22, 0.25), inset 0 1px 0 rgba(255, 180, 150, 0.3) !important;
   transform: translateY(-2.5px) !important;
 }
 
@@ -169,6 +221,14 @@ body.theme-earthy .glass-header {
   -webkit-backdrop-filter: none !important;
   border-bottom: 1px solid rgba(117, 102, 83, 0.18) !important;
   box-shadow: none !important;
+}
+
+body.theme-sunset .glass-header {
+  background: rgba(24, 13, 34, 0.78) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  border-bottom: 1px solid rgba(255, 180, 150, 0.15) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
 }
 
 /* TipTap Editor Styling */
@@ -194,7 +254,8 @@ body.theme-earthy .glass-header {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-body.theme-glassmorphic .tiptap-editor-surface {
+body.theme-glassmorphic .tiptap-editor-surface,
+body.theme-sunset .tiptap-editor-surface {
   backdrop-filter: blur(24px) saturate(190%);
   -webkit-backdrop-filter: blur(24px) saturate(190%);
 }
@@ -220,7 +281,8 @@ body.theme-glassmorphic .tiptap-editor-surface {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 20px 45px rgba(0, 0, 0, 0.2);
 }
 
-body.theme-glassmorphic .tiptap-editor-shell {
+body.theme-glassmorphic .tiptap-editor-shell,
+body.theme-sunset .tiptap-editor-shell {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
@@ -253,6 +315,13 @@ body.theme-earthy ::-webkit-scrollbar-thumb {
   background-clip: content-box;
 }
 
+body.theme-sunset ::-webkit-scrollbar-thumb {
+  background: rgba(255, 180, 150, 0.22);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
 body.theme-glassmorphic ::-webkit-scrollbar-thumb:hover {
   background: rgba(52, 211, 153, 0.4);
   background-clip: content-box;
@@ -262,6 +331,12 @@ body.theme-earthy ::-webkit-scrollbar-thumb:hover {
   background: rgba(149, 162, 132, 0.6);
   background-clip: content-box;
 }
+
+body.theme-sunset ::-webkit-scrollbar-thumb:hover {
+  background: rgba(249, 115, 22, 0.5);
+  background-clip: content-box;
+}
+
 
 @media (max-width: 899px) {
   .tiptap-editor-surface,

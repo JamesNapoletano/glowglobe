@@ -44,6 +44,11 @@ export const workspaceSurfaceOptions = [
     label: "Structure",
     description: "Shape acts, beats, subplots, and POV movement.",
   },
+  {
+    id: "settings",
+    label: "Project Settings",
+    description: "Manage project UI theme aesthetic, metadata, and export backups.",
+  },
 ] as const;
 
 export type WorkspaceSurface = (typeof workspaceSurfaceOptions)[number]["id"];

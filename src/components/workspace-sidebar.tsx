@@ -57,6 +57,8 @@ type WorkspaceSidebarProps = {
   userTier?: SubscriptionTier;
 };
 
+import TuneRounded from "@mui/icons-material/TuneRounded";
+
 const surfaceIcons: Record<WorkspaceSurface, React.ReactNode> = {
   writing: <AutoStoriesRounded fontSize="small" />,
   characters: <GroupsRounded fontSize="small" />,
@@ -67,6 +69,7 @@ const surfaceIcons: Record<WorkspaceSurface, React.ReactNode> = {
   corkboard: <CategoryRounded fontSize="small" />,
   lore: <LibraryBooksRounded fontSize="small" />,
   structure: <SchemaRounded fontSize="small" />,
+  settings: <TuneRounded fontSize="small" />,
 };
 
 export function WorkspaceSidebar({
@@ -159,7 +162,7 @@ export function WorkspaceSidebar({
       {/* Collapsed Rail vs Expanded View */}
       {isCollapsed ? (
         <Stack spacing={1} sx={{ alignItems: "center", flex: 1, minHeight: 0, overflowY: "auto", pr: 0 }}>
-          <Tooltip title={`Switch theme (Current: ${themeMode === "glassmorphic" ? "Glass Obsidian" : "Earthy Parchment"})`} placement="right">
+          <Tooltip title={`Switch theme (Current: ${themeMode === "sunset" ? "Sunset Glow" : themeMode === "earthy" ? "Earthy Parchment" : "Glass Obsidian"})`} placement="right">
             <IconButton aria-label="Switch theme" onClick={toggleThemeMode} sx={collapsedRailButtonSx}>
               <PaletteRounded fontSize="small" />
             </IconButton>
@@ -174,7 +177,7 @@ export function WorkspaceSidebar({
           {onExportProject && activeProjectId && (
             <Tooltip title="Export project JSON backup" placement="right">
               <IconButton
-                aria-label="Export project JSON backup"
+                aria-label="Export project"
                 onClick={() => onExportProject(activeProjectId)}
                 sx={collapsedRailButtonSx}
               >
@@ -184,7 +187,7 @@ export function WorkspaceSidebar({
           )}
 
           <Tooltip title={isQuotaExceeded ? `Project limit reached (${quota.currentCount}/${quota.maxAllowed}). Click to upgrade.` : "New project"} placement="right">
-            <IconButton aria-label="Create new project" onClick={onOpenCreateProject} sx={collapsedRailButtonSx}>
+            <IconButton aria-label="New project" onClick={onOpenCreateProject} sx={collapsedRailButtonSx}>
               {isQuotaExceeded ? <LockRounded fontSize="small" color="warning" /> : <AddRounded fontSize="small" />}
             </IconButton>
           </Tooltip>
@@ -228,10 +231,10 @@ export function WorkspaceSidebar({
                 <Typography variant="overline" color="primary.main">
                   Active Project
                 </Typography>
-                <Tooltip title={`Current Theme: ${themeMode === "glassmorphic" ? "Glass Obsidian" : "Earthy Parchment"}`}>
+                <Tooltip title={`Current Theme: ${themeMode === "sunset" ? "Sunset Glow" : themeMode === "earthy" ? "Earthy Parchment" : "Glass Obsidian"}`}>
                   <Chip
                     icon={<PaletteRounded style={{ fontSize: 13 }} />}
-                    label={themeMode === "glassmorphic" ? "Glass" : "Earthy"}
+                    label={themeMode === "sunset" ? "Sunset" : themeMode === "earthy" ? "Earthy" : "Glass"}
                     onClick={toggleThemeMode}
                     size="small"
                     variant="outlined"

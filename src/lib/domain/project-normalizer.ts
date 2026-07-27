@@ -1,4 +1,5 @@
 import { createEmptyDocument, generateUuid, isValidUuid, stringToUuid } from "@/lib/domain/project-factory";
+import type { ThemeMode } from "@/theme/brand-tokens";
 import type {
   Act,
   Beat,
@@ -108,6 +109,7 @@ export function normalizeProject(project: Project): Project {
     description: project.description ?? "",
     status: normalizeStatus(project.status),
     lifecycleState: normalizeLifecycleState(project.lifecycleState),
+    themeMode: normalizeThemeMode(project.themeMode),
     books: ensureArray(project.books).map((b) => normalizeBook(b, getOrGenerateUuid, remapRefArray)),
     documents: ensureArray(project.documents).map((d) => normalizeDocument(d, getOrGenerateUuid)),
     characters: ensureArray(project.characters).map((c) => normalizeCharacter(c, getOrGenerateUuid, remapRef, remapRefArray)),
@@ -543,6 +545,12 @@ function normalizeLifecycleState(state?: ProjectLifecycleState): ProjectLifecycl
   return state && ["active", "archived", "trashed"].includes(state)
     ? state
     : "active";
+}
+
+function normalizeThemeMode(mode?: ThemeMode): ThemeMode {
+  return mode && ["earthy", "glassmorphic", "sunset"].includes(mode)
+    ? mode
+    : "glassmorphic";
 }
 
 function ensureArray<T>(value: T[] | undefined | null): T[] {

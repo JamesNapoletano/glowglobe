@@ -1,3 +1,4 @@
+import type { ThemeMode } from "@/theme/brand-tokens";
 import type {
   CharacterStatus,
   Chapter,
@@ -12,6 +13,7 @@ export type CreateProjectInput = {
   title: string;
   genre: string;
   description: string;
+  themeMode?: ThemeMode;
 };
 
 export type UpdateProjectDetailsInput = {
@@ -19,6 +21,7 @@ export type UpdateProjectDetailsInput = {
   genre: string;
   description: string;
   status: ProjectStatus;
+  themeMode?: ThemeMode;
 };
 
 export type ProjectLifecycleState = Project["lifecycleState"];
@@ -126,6 +129,7 @@ export function createProjectFromInput(input: CreateProjectInput): Project {
     description: summary,
     status: createInitialProjectStatus(summary),
     lifecycleState: "active",
+    themeMode: input.themeMode ?? "glassmorphic",
     books: [
       {
         id: bookId,
@@ -199,6 +203,7 @@ export function updateProjectDetails(project: Project, input: UpdateProjectDetai
     genre: nextGenre,
     description: nextDescription,
     status: input.status,
+    themeMode: input.themeMode ?? project.themeMode ?? "glassmorphic",
     books: nextBooks,
   };
 }

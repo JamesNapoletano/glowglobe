@@ -22,8 +22,8 @@ export function ThemeModeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const storedMode = window.localStorage.getItem(THEME_STORAGE_KEY);
-      if (storedMode === "earthy" || storedMode === "glassmorphic") {
+      const storedMode = window.localStorage.getItem(THEME_STORAGE_KEY) as ThemeMode | null;
+      if (storedMode === "earthy" || storedMode === "glassmorphic" || storedMode === "sunset") {
         setThemeModeState(storedMode);
       }
     } finally {
@@ -41,17 +41,15 @@ export function ThemeModeProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleThemeMode = () => {
-    setThemeMode(themeMode === "earthy" ? "glassmorphic" : "earthy");
+    const modes: ThemeMode[] = ["glassmorphic", "earthy", "sunset"];
+    const currentIndex = modes.indexOf(themeMode);
+    const nextMode = modes[currentIndex >= 0 ? (currentIndex + 1) % modes.length : 0];
+    setThemeMode(nextMode);
   };
 
   useEffect(() => {
-    if (themeMode === "glassmorphic") {
-      document.body.classList.add("theme-glassmorphic");
-      document.body.classList.remove("theme-earthy");
-    } else {
-      document.body.classList.add("theme-earthy");
-      document.body.classList.remove("theme-glassmorphic");
-    }
+    document.body.classList.remove("theme-glassmorphic", "theme-earthy", "theme-sunset");
+    document.body.classList.add(`theme-${themeMode}`);
   }, [themeMode]);
 
   const muiTheme = useMemo(() => createAppTheme(themeMode), [themeMode]);

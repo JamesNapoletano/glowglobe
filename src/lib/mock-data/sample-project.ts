@@ -29,6 +29,7 @@ export const sampleProject: Project = {
     "A speculative novel workspace used to validate GlowGlobe's manuscript-first shell, contextual reference model, and planning surfaces.",
   status: "drafting",
   lifecycleState: "active",
+  themeMode: "glassmorphic",
   books: [
     {
       id: "a0200000-0000-4000-8000-000000000002",

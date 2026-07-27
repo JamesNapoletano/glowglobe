@@ -1,7 +1,15 @@
 "use client";
 
+import CheckCircleRounded from "@mui/icons-material/CheckCircleRounded";
+import DeleteOutlineRounded from "@mui/icons-material/DeleteOutlineRounded";
+import FileDownloadRounded from "@mui/icons-material/FileDownloadRounded";
+import FolderZipRounded from "@mui/icons-material/FolderZipRounded";
+import PaletteRounded from "@mui/icons-material/PaletteRounded";
+import TuneRounded from "@mui/icons-material/TuneRounded";
+import { Alert, Box, Button, Card, CardContent, Chip, Divider, Grid, Stack, Typography } from "@mui/material";
 import { EntityWorkspace, EntityWorkspaceSection, WorkspaceSurfaceLayout, type EntityFormField, type EntityWorkspaceMetric, type WorkspaceSurfaceSection } from "@/components/entity-workspace";
 import { PlanningEntityWorkspace, PlanningEntityWorkspaceSection } from "@/components/planning-entity-workspace";
+import { ProjectDetailsForm } from "@/components/project-details-form";
 import type { WorkspaceSurface } from "@/components/workspace-surfaces";
 import type { Project } from "@/lib/domain/types";
 import type {
@@ -23,7 +31,10 @@ import type {
   SubplotInput,
   TechnologyEntryInput,
   TimelineEventInput,
+  UpdateProjectDetailsInput,
 } from "@/lib/domain/project-factory";
+import type { ThemeMode } from "@/theme/brand-tokens";
+import { useThemeMode } from "@/theme/theme-context";
 
 export type SurfaceSelectionKey =
   | "characters"
@@ -53,6 +64,10 @@ type SurfaceHandlers = {
   onCreateEntry: (surface: SurfaceSelectionKey) => Promise<void>;
   onDeleteEntry: (surface: SurfaceSelectionKey, id: string) => Promise<void>;
   onSaveEntry: (surface: SurfaceSelectionKey, values: Record<string, string | number | undefined>) => Promise<void>;
+  onUpdateProjectDetails?: (input: UpdateProjectDetailsInput) => Promise<void>;
+  onExportProject?: () => void;
+  onArchiveProject?: () => Promise<void>;
+  onMoveProjectToTrash?: () => Promise<void>;
 };
 
 type WorkspaceSurfaceContentProps = {
@@ -478,7 +493,196 @@ export function WorkspaceSurfaceContent({ project, activeSurface, handlers }: Wo
           title="Structure workspace"
         />
       );
+
+    case "settings":
+      return <ProjectSettingsSurface handlers={handlers} project={project} />;
   }
+}
+
+type ProjectSettingsSurfaceProps = {
+  project: Project;
+  handlers: SurfaceHandlers;
+};
+
+function ProjectSettingsSurface({ project, handlers }: ProjectSettingsSurfaceProps) {
+  const { themeMode, setThemeMode } = useThemeMode();
+
+  const handleSelectTheme = (selectedMode: ThemeMode) => {
+    setThemeMode(selectedMode);
+    if (handlers.onUpdateProjectDetails) {
+      void handlers.onUpdateProjectDetails({
+        title: project.title,
+        genre: project.genre,
+        description: project.description,
+        status: project.status,
+        themeMode: selectedMode,
+      });
+    }
+  };
+
+  const themes: Array<{
+    id: ThemeMode;
+    title: string;
+    description: string;
+    badge: string;
+    colors: { primary: string; secondary: string; bg: string };
+  }> = [
+    {
+      id: "glassmorphic",
+      title: "🔮 Glassmorphic Obsidian",
+      description: "Midnight dark studio with luminous emerald & warm amber glow.",
+      badge: "Cybernetic Obsidian",
+      colors: { primary: "#10B981", secondary: "#F59E0B", bg: "#0B0F17" },
+    },
+    {
+      id: "earthy",
+      title: "📜 Earthy Parchment",
+      description: "Warm editorial parchment with classic serif typography.",
+      badge: "Warm Editorial",
+      colors: { primary: "#95A284", secondary: "#B28A62", bg: "#EDE6DA" },
+    },
+    {
+      id: "sunset",
+      title: "🌅 Sunset Glow",
+      description: "Deep twilight dusk with warm crimson coral & violet glow.",
+      badge: "Twilight Dusk",
+      colors: { primary: "#F97316", secondary: "#A855F7", bg: "#140C1D" },
+    },
+  ];
+
+  return (
+    <Stack spacing={3.5} sx={{ maxWidth: 1100, mx: "auto", py: 1 }}>
+      {/* Header */}
+      <Stack spacing={1}>
+        <Typography variant="overline" color="primary.main">
+          Project Settings · {project.title}
+        </Typography>
+        <Typography variant="h2" sx={{ overflowWrap: "anywhere" }}>
+          Project Aesthetics & Configuration
+        </Typography>
+        <Typography color="text.secondary">
+          Themes configured here are bound specifically to <strong>{project.title}</strong> and automatically load whenever you open this project workspace.
+        </Typography>
+      </Stack>
+
+      {/* Theme Cards Grid */}
+      <Box>
+        <Typography variant="h3" sx={{ mb: 1.5, fontSize: 18, fontWeight: 700 }}>
+          Visual Theme Mode
+        </Typography>
+        <Grid container spacing={2.5}>
+          {themes.map((t) => {
+            const isSelected = (project.themeMode ?? themeMode) === t.id;
+            return (
+              <Grid size={{ xs: 12, md: 4 }} key={t.id}>
+                <Card
+                  onClick={() => handleSelectTheme(t.id)}
+                  className="glass-card"
+                  sx={{
+                    cursor: "pointer",
+                    borderRadius: 3,
+                    border: isSelected ? "2px solid" : "1px solid",
+                    borderColor: isSelected ? "primary.main" : "divider",
+                    bgcolor: "background.paper",
+                    position: "relative",
+                    transition: "all 0.2s ease-in-out",
+                    "&:hover": {
+                      transform: "translateY(-3px)",
+                      borderColor: "primary.main",
+                    },
+                  }}
+                >
+                  <CardContent sx={{ p: 2.5 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+                      <Chip label={t.badge} size="small" variant="outlined" color={isSelected ? "primary" : "default"} />
+                      {isSelected ? <CheckCircleRounded color="primary" fontSize="small" /> : null}
+                    </Box>
+
+                    <Typography variant="h4" sx={{ fontWeight: 800, fontSize: 16, mb: 0.75 }}>
+                      {t.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2, minHeight: 44 }}>
+                      {t.description}
+                    </Typography>
+
+                    {/* Color Swatch Bar */}
+                    <Box sx={{ display: "flex", gap: 1, alignItems: "center", p: 1, borderRadius: 2, bgcolor: "action.hover" }}>
+                      <Box sx={{ width: 22, height: 22, borderRadius: 999, bgcolor: t.colors.primary, border: "1px solid rgba(255,255,255,0.2)" }} />
+                      <Box sx={{ width: 22, height: 22, borderRadius: 999, bgcolor: t.colors.secondary, border: "1px solid rgba(255,255,255,0.2)" }} />
+                      <Box sx={{ width: 22, height: 22, borderRadius: 999, bgcolor: t.colors.bg, border: "1px solid rgba(255,255,255,0.2)" }} />
+                      <Typography variant="caption" color="text.secondary" sx={{ ml: "auto", fontWeight: 600 }}>
+                        {isSelected ? "Active Theme" : "Click to apply"}
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Box>
+
+      <Divider />
+
+      {/* Metadata Form */}
+      <Card className="glass-panel" sx={{ borderRadius: 3, p: 3 }}>
+        <ProjectDetailsForm
+          project={project}
+          onSaveProjectDetails={async (input) => {
+            if (handlers.onUpdateProjectDetails) {
+              await handlers.onUpdateProjectDetails(input);
+            }
+          }}
+          onExportProject={handlers.onExportProject}
+        />
+      </Card>
+
+      {/* Project Management Actions */}
+      <Card className="glass-panel" sx={{ borderRadius: 3, p: 3 }}>
+        <Typography variant="overline" color="error.main">
+          Project Lifecycle & Danger Zone
+        </Typography>
+        <Typography variant="h3" sx={{ mt: 0.5, mb: 1, fontSize: 18 }}>
+          Project Management Actions
+        </Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          Archive or delete this project from your workspace.
+        </Typography>
+
+        <Stack sx={{ flexDirection: "row", gap: 2, flexWrap: "wrap" }}>
+          {handlers.onArchiveProject && (
+            <Button
+              variant="outlined"
+              color="warning"
+              startIcon={<FolderZipRounded />}
+              onClick={() => {
+                if (window.confirm(`Archive "${project.title}"?`)) {
+                  void handlers.onArchiveProject?.();
+                }
+              }}
+            >
+              Archive Project
+            </Button>
+          )}
+
+          {handlers.onMoveProjectToTrash && (
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteOutlineRounded />}
+              onClick={() => {
+                if (window.confirm(`Move "${project.title}" to trash?`)) {
+                  void handlers.onMoveProjectToTrash?.();
+                }
+              }}
+            >
+              Move to Trash
+            </Button>
+          )}
+        </Stack>
+      </Card>
+    </Stack>
+  );
 }
 
 type SectionConfig<T extends Record<string, string | number | undefined>> = {

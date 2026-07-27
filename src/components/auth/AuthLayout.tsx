@@ -39,9 +39,9 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
               width: "100%",
               borderRadius: 4,
               boxShadow:
-                themeMode === "glassmorphic"
-                  ? "0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
-                  : "0 10px 30px rgba(67, 52, 35, 0.08)",
+                themeMode === "earthy"
+                  ? "0 10px 30px rgba(67, 52, 35, 0.08)"
+                  : "0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2)",
             }}
           >
             <CardContent sx={{ p: { xs: 3, sm: 4 } }}>

@@ -1,4 +1,4 @@
-export type ThemeMode = "earthy" | "glassmorphic";
+export type ThemeMode = "earthy" | "glassmorphic" | "sunset";
 
 export const earthyTokens = {
   palette: {
@@ -172,8 +172,98 @@ export const glassmorphicTokens = {
   },
 } as const;
 
+export const sunsetTokens = {
+  palette: {
+    primary: {
+      main: "#F97316", // Warm Sunset Coral / Amber Orange
+      light: "#FDBA74",
+      dark: "#EA580C",
+      contrastText: "#FFFFFF",
+    },
+    secondary: {
+      main: "#A855F7", // Twilight Dusk Violet
+      light: "#C084FC",
+      dark: "#7E22CE",
+      contrastText: "#FFFFFF",
+    },
+    accent: {
+      cyan: "#38BDF8",
+      indigo: "#818CF8",
+      violet: "#C084FC",
+      rose: "#F43F5E",
+    },
+    background: {
+      default: "#140C1D", // Deep Twilight Dusk Base
+      paper: "rgba(32, 19, 44, 0.72)",
+      panel: "rgba(26, 15, 36, 0.78)",
+      panelMuted: "rgba(20, 11, 28, 0.65)",
+      manuscript: "rgba(36, 21, 50, 0.88)",
+      rail: "rgba(24, 13, 34, 0.70)",
+    },
+    text: {
+      primary: "#FDF4FF", // Crisp soft white-lavender
+      secondary: "#D8B4FE", // Soft slate lavender
+      muted: "#94A3B8",
+    },
+    divider: "rgba(255, 180, 150, 0.14)",
+    glassBorder: "rgba(255, 180, 150, 0.18)",
+    glassBorderLight: "rgba(255, 180, 150, 0.28)",
+    glassBorderGlow: "rgba(249, 115, 22, 0.5)",
+    success: {
+      main: "#10B981",
+    },
+    warning: {
+      main: "#F59E0B",
+    },
+    error: {
+      main: "#F43F5E",
+    },
+  },
+  typography: {
+    uiFontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    displayFontFamily: '"Plus Jakarta Sans", Inter, -apple-system, sans-serif',
+    manuscriptFontFamily: '"Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif',
+    wordmarkFontFamily: 'Inter, -apple-system, sans-serif',
+    labelTracking: "0.14em",
+  },
+  shape: {
+    shellRadius: 16,
+    cardRadius: 16,
+    inputRadius: 10,
+    pillRadius: 999,
+  },
+  spacing: {
+    compact: 6,
+    cozy: 12,
+    roomy: 16,
+    spacious: 24,
+  },
+  glass: {
+    backdropFilter: "blur(20px) saturate(190%)",
+    backdropFilterHeavy: "blur(28px) saturate(200%)",
+    surfaceLight: "rgba(255, 255, 255, 0.08)",
+    surfaceMedium: "rgba(255, 255, 255, 0.12)",
+    surfaceActive: "rgba(249, 115, 22, 0.16)",
+    innerRim: "inset 0 1px 0 rgba(255, 180, 150, 0.25)",
+  },
+  shadows: {
+    card: "0 20px 40px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 180, 150, 0.20)",
+    floating: "0 25px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 180, 150, 0.25)",
+    selected: "0 10px 25px rgba(249, 115, 22, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35)",
+    focusRing: "0 0 0 3px rgba(253, 186, 116, 0.40), 0 0 20px rgba(249, 115, 22, 0.30)",
+  },
+  logo: {
+    ring: "rgba(249, 115, 22, 0.5)",
+    line: "rgba(255, 255, 255, 0.6)",
+    glow: "radial-gradient(circle at 35% 30%, rgba(249, 115, 22, 0.95), rgba(244, 63, 94, 0.8) 42%, rgba(168, 85, 247, 0.45) 100%)",
+  },
+} as const;
+
 export function getBrandTokens(mode: ThemeMode = "glassmorphic") {
-  return mode === "earthy" ? earthyTokens : glassmorphicTokens;
+  if (mode === "earthy") return earthyTokens;
+  if (mode === "sunset") return sunsetTokens;
+  return glassmorphicTokens;
 }
 
 export const brandTokens = glassmorphicTokens;
+

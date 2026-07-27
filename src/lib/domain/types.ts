@@ -1,3 +1,5 @@
+import type { ThemeMode } from "@/theme/brand-tokens";
+
 export type EntityId = string;
 
 export type ProjectStatus = "idea" | "planning" | "drafting" | "revising" | "complete";
@@ -242,6 +244,7 @@ export interface Project extends BaseEntity {
   description: string;
   status: ProjectStatus;
   lifecycleState: ProjectLifecycleState;
+  themeMode?: ThemeMode;
   books: Book[];
   documents: StoryDocument[];
   characters: Character[];
@@ -264,3 +267,4 @@ export interface Project extends BaseEntity {
   researchNotes: ResearchNote[];
   revisionSnapshots: RevisionSnapshot[];
 }
+

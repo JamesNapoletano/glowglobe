@@ -13,6 +13,7 @@ export function GlowGlobeLogo({ compact = false, showWordmark = true, subtitle }
   const { themeMode } = useThemeMode();
   const iconSize = compact ? 30 : 38;
   const isEarthy = themeMode === "earthy";
+  const isSunset = themeMode === "sunset";
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: compact ? 1.25 : 1.6, minWidth: 0 }}>
@@ -86,6 +87,42 @@ export function GlowGlobeLogo({ compact = false, showWordmark = true, subtitle }
             <circle cx="15" cy="14" r="2.2" fill="#FFFFFF" filter="url(#amberGlow)" />
             <circle cx="15" cy="14" r="1" fill="#FFF2D6" />
           </svg>
+        ) : isSunset ? (
+          /* Warm Twilight Sunset Sphere (Sunset Theme) */
+          <svg
+            width={iconSize}
+            height={iconSize}
+            viewBox="0 0 40 40"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ filter: "drop-shadow(0 4px 14px rgba(249, 115, 22, 0.45))" }}
+          >
+            <defs>
+              <linearGradient id="sunsetRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#F97316" />
+                <stop offset="50%" stopColor="#F43F5E" />
+                <stop offset="100%" stopColor="#A855F7" />
+              </linearGradient>
+
+              <radialGradient id="sunsetOrbGrad" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stopColor="#FFF7ED" />
+                <stop offset="30%" stopColor="#F97316" />
+                <stop offset="70%" stopColor="#E11D48" />
+                <stop offset="100%" stopColor="#581C87" />
+              </radialGradient>
+
+              <filter id="sunsetGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="2" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            <circle cx="20" cy="20" r="18.5" stroke="url(#sunsetRingGrad)" strokeWidth="1.5" strokeDasharray="30 4 10 4" opacity="0.9" />
+            <circle cx="20" cy="20" r="14.5" fill="url(#sunsetOrbGrad)" />
+            <ellipse cx="20" cy="20" rx="14.5" ry="5.5" stroke="rgba(255, 255, 255, 0.55)" strokeWidth="1" />
+            <ellipse cx="20" cy="20" rx="5.5" ry="14.5" stroke="rgba(255, 255, 255, 0.45)" strokeWidth="0.9" />
+            <circle cx="14.5" cy="13.5" r="2.5" fill="#FFFFFF" filter="url(#sunsetGlow)" />
+          </svg>
         ) : (
           /* Luminous Cybernetic Emerald Sphere (Glassmorphic Theme) */
           <svg
@@ -139,6 +176,8 @@ export function GlowGlobeLogo({ compact = false, showWordmark = true, subtitle }
             sx={{
               background: isEarthy
                 ? "linear-gradient(135deg, #4A3525 0%, #755530 55%, #A3753F 100%)"
+                : isSunset
+                ? "linear-gradient(135deg, #FFFFFF 0%, #FB923C 55%, #C084FC 100%)"
                 : "linear-gradient(135deg, #FFFFFF 0%, #34D399 65%, #F59E0B 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
@@ -146,7 +185,7 @@ export function GlowGlobeLogo({ compact = false, showWordmark = true, subtitle }
                 ? '"Iowan Old Style", "Palatino Linotype", Georgia, serif'
                 : '"Plus Jakarta Sans", Inter, sans-serif',
               fontSize: compact ? 14 : 16.5,
-              fontWeight: isEarthy ? 800 : 800,
+              fontWeight: 800,
               letterSpacing: isEarthy ? "0.08em" : "0.12em",
               lineHeight: 1.1,
               textTransform: isEarthy ? "none" : "uppercase",
@@ -176,3 +215,4 @@ export function GlowGlobeLogo({ compact = false, showWordmark = true, subtitle }
     </Box>
   );
 }
+

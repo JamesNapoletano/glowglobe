@@ -2,7 +2,8 @@
 
 import { Box, Card, CardContent, Grid, Skeleton, Stack, Typography } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useSyncExternalStore, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type Dispatch, type SetStateAction } from "react";
+import { useThemeMode } from "@/theme/theme-context";
 import { AppShell } from "@/components/app-shell";
 import { GlowGlobeLogo } from "@/components/glowglobe-logo";
 import type { WorkspaceSurface } from "@/components/workspace-surfaces";
@@ -99,6 +100,7 @@ type WorkspaceRootProps = {
 export function WorkspaceRoot({ routeState }: WorkspaceRootProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { themeMode, setThemeMode } = useThemeMode();
   const repository = useMemo(() => new IndexedDbProjectRepository(), []);
   const hasMounted = useClientReady();
   const [projects, setProjects] = useState<Project[]>(() => workspaceProjectsCache);
@@ -185,6 +187,19 @@ export function WorkspaceRoot({ routeState }: WorkspaceRootProps) {
   const activeSceneId = resolvedRoute.sceneId;
   const activeSurface = resolvedRoute.surface;
 
+  const activeProjectIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (activeProjectId && activeProjectId !== activeProjectIdRef.current) {
+      activeProjectIdRef.current = activeProjectId;
+      if (activeProject?.themeMode) {
+        setThemeMode(activeProject.themeMode);
+      }
+    } else if (!activeProjectId) {
+      activeProjectIdRef.current = null;
+    }
+  }, [activeProjectId, activeProject?.themeMode, setThemeMode]);
+
   useEffect(() => {
     if (workspacePendingCanonicalPath && resolvedRoute.canonicalPath === workspacePendingCanonicalPath) {
       workspacePendingCanonicalPath = null;
@@ -215,7 +230,10 @@ export function WorkspaceRoot({ routeState }: WorkspaceRootProps) {
   }
 
   const handleCreateProject = async (input: CreateProjectInput) => {
-    const project = createProjectFromInput(input);
+    const project = createProjectFromInput({
+      ...input,
+      themeMode: input.themeMode ?? themeMode,
+    });
     const normalizedProject = normalizeProject(project);
     const path = getProjectNavigationPath(normalizedProject, "writing");
 

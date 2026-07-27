@@ -5,7 +5,7 @@ import { getBrandTokens, type ThemeMode } from "@/theme/brand-tokens";
 
 export function createAppTheme(mode: ThemeMode = "glassmorphic") {
   const tokens = getBrandTokens(mode);
-  const isDark = mode === "glassmorphic";
+  const isDark = mode === "glassmorphic" || mode === "sunset";
 
   return createTheme({
     cssVariables: true,

@@ -8,6 +8,8 @@ import type { Project } from "@/lib/domain/types";
 import type { UpdateProjectDetailsInput } from "@/lib/domain/project-factory";
 import { useThemeMode } from "@/theme/theme-context";
 
+import type { ThemeMode } from "@/theme/brand-tokens";
+
 type ProjectDetailsFormProps = {
   project: Project;
   isLoading?: boolean;
@@ -36,6 +38,7 @@ export function ProjectDetailsForm({
       genre: project.genre ?? "",
       description: project.description ?? "",
       status: project.status ?? "planning",
+      themeMode: project.themeMode ?? "glassmorphic",
     },
   });
 
@@ -45,6 +48,7 @@ export function ProjectDetailsForm({
       genre: project.genre ?? "",
       description: project.description ?? "",
       status: project.status ?? "planning",
+      themeMode: project.themeMode ?? "glassmorphic",
     });
   }, [project, reset]);
 
@@ -63,7 +67,7 @@ export function ProjectDetailsForm({
           Manage project metadata
         </Typography>
         <Typography color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
-          Update your project title, genre, summary, and progress state, or export a local JSON backup.
+          Update your project title, genre, summary, progress state, and project-specific UI theme, or export a local JSON backup.
         </Typography>
       </Stack>
 
@@ -103,7 +107,13 @@ export function ProjectDetailsForm({
           {...register("description")}
         />
 
-        <ThemeModeSelector />
+        <Controller
+          control={control}
+          name="themeMode"
+          render={({ field }) => (
+            <ThemeModeSelector value={field.value ?? project.themeMode ?? "glassmorphic"} onChange={field.onChange} />
+          )}
+        />
 
         <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", alignItems: "center" }}>
           <Button disabled={isSubmitting || isLoading} size="large" type="submit" variant="contained">
@@ -133,8 +143,18 @@ export function ProjectDetailsForm({
   );
 }
 
-function ThemeModeSelector() {
-  const { themeMode, setThemeMode } = useThemeMode();
+type ThemeModeSelectorProps = {
+  value: ThemeMode;
+  onChange: (mode: ThemeMode) => void;
+};
+
+function ThemeModeSelector({ value, onChange }: ThemeModeSelectorProps) {
+  const { setThemeMode } = useThemeMode();
+
+  const handleChange = (newMode: ThemeMode) => {
+    setThemeMode(newMode);
+    onChange(newMode);
+  };
 
   return (
     <Box sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, p: 2, bgcolor: "background.paper" }}>
@@ -148,14 +168,17 @@ function ThemeModeSelector() {
         fullWidth
         label="Theme"
         select
-        value={themeMode}
-        onChange={(e) => setThemeMode(e.target.value as "earthy" | "glassmorphic")}
+        value={value}
+        onChange={(e) => handleChange(e.target.value as ThemeMode)}
       >
         <MenuItem value="glassmorphic">
           🔮 Glassmorphic Obsidian (Midnight Dark Studio & Glowing Aura)
         </MenuItem>
         <MenuItem value="earthy">
           📜 Earthy Parchment (Warm Editorial Parchment & Classic Paper)
+        </MenuItem>
+        <MenuItem value="sunset">
+          🌅 Sunset Glow (Warm Twilight Dusk & Crimson Coral Glow)
         </MenuItem>
       </TextField>
     </Box>
